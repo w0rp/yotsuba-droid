@@ -12,63 +12,60 @@ import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 
 public class SpanBuilder {
-	public static ForegroundColorSpan fg(int color) {
-		return new ForegroundColorSpan(color);
-	}
-	
-	public static ForegroundColorSpan fg(int r, int g, int b) {
-	    return fg(Color.rgb(r, g, b));
-	}
-	
-	public static BackgroundColorSpan bg(int color) {
-		return new BackgroundColorSpan(color);
-	}
-	
-	public static BackgroundColorSpan bg(int r, int g, int b) {
-	    return bg(Color.rgb(r, g, b));
-	}
+    public static ForegroundColorSpan fg(int color) {
+        return new ForegroundColorSpan(color);
+    }
 
-	public static UnderlineSpan underline() {
-		return new UnderlineSpan();
-	}
+    public static ForegroundColorSpan fg(int r, int g, int b) {
+        return fg(Color.rgb(r, g, b));
+    }
 
-	public static StyleSpan bold() {
-		return new StyleSpan(Typeface.BOLD);
-	}
+    public static BackgroundColorSpan bg(int color) {
+        return new BackgroundColorSpan(color);
+    }
 
-	public static StyleSpan italic() {
-		return new StyleSpan(Typeface.ITALIC);
-	}
+    public static BackgroundColorSpan bg(int r, int g, int b) {
+        return bg(Color.rgb(r, g, b));
+    }
 
-	public static StrikethroughSpan strike() {
-		return new StrikethroughSpan();
-	}
+    public static UnderlineSpan underline() {
+        return new UnderlineSpan();
+    }
 
-	private SpannableStringBuilder sb;
+    public static StyleSpan bold() {
+        return new StyleSpan(Typeface.BOLD);
+    }
 
-	public SpanBuilder() {
-		sb = new SpannableStringBuilder();
-	}
+    public static StyleSpan italic() {
+        return new StyleSpan(Typeface.ITALIC);
+    }
 
-	public void append(String text, Object... spanList) {
-		if (text == null || text.length() == 0) {
-			return;
-		}
+    public static StrikethroughSpan strike() {
+        return new StrikethroughSpan();
+    }
 
-		int start = sb.length();
-		int end   = start + text.length();
+    private SpannableStringBuilder sb;
 
-		sb.append(text);
+    public SpanBuilder() {
+        sb = new SpannableStringBuilder();
+    }
 
-		for (Object span : spanList) {
-			sb.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		}
-	}
+    public void append(String text, Object... spanList) {
+        if (text == null || text.length() == 0) {
+            return;
+        }
 
-	public Spanned span() {
-		return sb;
-	}
+        int start = sb.length();
+        int end = start + text.length();
 
-	//Linkify.addLinks(txtView, Linkify.WEB_URLS);
+        sb.append(text);
+
+        for (Object span : spanList) {
+            sb.setSpan(span, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+    }
+
+    public Spanned span() {
+        return sb;
+    }
 }
-

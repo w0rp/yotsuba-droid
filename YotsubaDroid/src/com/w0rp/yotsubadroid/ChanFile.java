@@ -15,10 +15,10 @@ public class ChanFile {
     private int smallHeight = 0;
     private String md5 = "";
     private int size = 0;
-    
+
     public static ChanFile fromChanJSON(JSONObject obj) throws JSONException {
         ChanFile file = new ChanFile();
-        
+
         file.setPrename(obj.getString("tim"));
         file.setOrigPrename(obj.getString("filename"));
         file.setExtension(obj.getString("ext"));
@@ -30,13 +30,13 @@ public class ChanFile {
         file.setSmallHeight(obj.optInt("tn_h"));
         file.setMD5(obj.optString("md5"));
         file.setSize(obj.optInt("fsize"));
-        
+
         return file;
     }
-    
+
     public static ChanFile fromJSON(JSONObject obj) {
         ChanFile file = new ChanFile();
-        
+
         file.setPrename(obj.optString("prename"));
         file.setOrigPrename(obj.optString("origPrename"));
         file.setExtension(obj.optString("extension"));
@@ -48,13 +48,13 @@ public class ChanFile {
         file.setSmallHeight(obj.optInt("smallHeight"));
         file.setMD5(obj.optString("md5"));
         file.setSize(obj.optInt("size"));
-        
+
         return file;
     }
-    
+
     public JSONObject toJSON() {
         JSONObject obj = new JSONObject();
-        
+
         try {
             obj.put("prename", prename);
             obj.put("origPrename", origPrename);
@@ -67,11 +67,12 @@ public class ChanFile {
             obj.put("smallHeight", smallHeight);
             obj.put("md5", md5);
             obj.put("size", size);
-        } catch (JSONException e) { }
-        
+        } catch (JSONException e) {
+        }
+
         return obj;
     }
-    
+
     @Override
     public String toString() {
         return toJSON().toString();
@@ -164,15 +165,15 @@ public class ChanFile {
     protected void setExtension(String extension) {
         this.extension = extension;
     }
-    
+
     public String getName() {
         return this.prename + this.extension;
     }
-    
+
     public String getOrigname() {
         return this.origPrename + this.extension;
     }
-    
+
     public String getSmallName() {
         return this.prename + "s.jpg";
     }

@@ -23,19 +23,19 @@ public abstract class PostListReceiver extends BasicReceiver {
         try {
             JSONArray jsonPostList = new JSONArray(
                 intent.getStringExtra("jsonPostList"));
-            
+
             List<Post> postList = new ArrayList<Post>();
-            
+
             for (JSONObject obj : JSON.objList(jsonPostList)) {
                 postList.add(Post.fromJSON(obj));
             }
-            
+
             onReceivePostList(postList);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    
+
     public abstract void onReceivePostList(List<Post> postList);
 
 }

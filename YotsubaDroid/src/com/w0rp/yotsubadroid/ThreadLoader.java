@@ -16,7 +16,7 @@ public class ThreadLoader extends PostLoader {
 
     public ThreadLoader(Activity act, String boardID, long threadID) {
         super(act, boardID);
-        
+
         this.threadID = threadID;
     }
 
@@ -28,27 +28,27 @@ public class ThreadLoader extends PostLoader {
 
     @Override
     protected URI getURI() {
-        return URI.create(Yot.API_URL + Uri.encode(getBoardID()) 
-            + "/res/" + Long.toString(threadID) + ".json");
+        return URI.create(Yot.API_URL + Uri.encode(getBoardID()) + "/res/"
+            + Long.toString(threadID) + ".json");
     }
-    
+
     protected List<Post> loadJson(String json) {
         List<Post> postList = new ArrayList<Post>();
-        
+
         JSONObject threadObj = null;
-        
+
         try {
             threadObj = new JSONObject(json);
         } catch (Exception e) {
             // TODO: handle exception
             return postList;
         }
-        
+
         for (JSONObject postObj : JSON.objList(threadObj, "posts")) {
             Post post = Post.fromChanJSON(getBoardID(), postObj);
             postList.add(post);
         }
-        
+
         return postList;
     }
 }

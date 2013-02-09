@@ -18,36 +18,36 @@ public class CatalogLoader extends PostLoader {
     }
 
     @SuppressWarnings("rawtypes")
-    @Override 
+    @Override
     protected Class getReceiverClass() {
         return BoardCatalogFragment.CatalogReceiver.class;
     }
 
     @Override
     protected URI getURI() {
-        return URI.create(Yot.API_URL + Uri.encode(getBoardID()) 
+        return URI.create(Yot.API_URL + Uri.encode(getBoardID())
             + "/catalog.json");
     }
-    
+
     protected List<Post> loadJson(String json) {
         List<Post> postList = new ArrayList<Post>();
-        
+
         JSONArray arr = null;
-        
+
         try {
             arr = new JSONArray(json);
         } catch (Exception e) {
             // TODO: handle exception
             return postList;
         }
-        
+
         for (JSONObject pageObj : JSON.objList(arr)) {
             for (JSONObject postObj : JSON.objList(pageObj, "threads")) {
                 Post post = Post.fromChanJSON(getBoardID(), postObj);
                 postList.add(post);
             }
         }
-        
+
         return postList;
     }
 }

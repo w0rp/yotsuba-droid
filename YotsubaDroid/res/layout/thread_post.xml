@@ -10,9 +10,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/filedeleted" 
         android:contentDescription="Post Image"
-        />
+        android:src="@drawable/filedeleted" />
 
     <TextView
         android:id="@+id/post_comment"

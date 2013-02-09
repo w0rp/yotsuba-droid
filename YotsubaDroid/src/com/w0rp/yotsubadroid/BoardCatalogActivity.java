@@ -9,17 +9,17 @@ public class BoardCatalogActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board_catalog);
-        
+
         // Load the board from the intent data.
         Board board = Yot.cachedBoard(getIntent().getStringExtra("boardID"));
-        
+
         getActionBar().setTitle(board.getTitle());
-        
+
         BoardCatalogFragment frag = (BoardCatalogFragment) getFragmentManager()
             .findFragmentById(R.id.board_catalog_fragment);
         frag.setBoardID(board.getID());
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

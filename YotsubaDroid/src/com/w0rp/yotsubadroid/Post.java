@@ -28,16 +28,16 @@ public class Post {
     private int imageCount = 0;
     private boolean bumpLimitHit = false;
     private boolean imageLimitHit = false;
-    
+
     public static Post fromChanJSON(String boardID, JSONObject obj) {
         Post post = new Post(boardID);
-        
+
         if (obj.optString("filename").length() > 0) {
             try {
                 post.setFile(ChanFile.fromChanJSON(obj));
             } catch (JSONException e) { }
         }
-        
+
         post.setTime(obj.optLong("time"));
         post.setPostNumber(obj.optLong("no"));
         post.setReplyTo(obj.optLong("resto"));
@@ -49,7 +49,7 @@ public class Post {
         post.setPosterID(obj.optString("id"));
         post.setCapcode(obj.optString("capcode"));
         post.setCountryCode(obj.optString("country"));
-        
+
         if (post.isThread()) {
             post.setCustomSpoiler(obj.optInt("custom_spoiler"));
             post.setReplyCount(obj.optInt("replies"));
@@ -57,19 +57,19 @@ public class Post {
             post.setBumpLimitHit(obj.optInt("bumplimit") == 1);
             post.setImageLimitHit(obj.optInt("imagelimit") == 1);
         }
-        
+
         return post;
     }
-    
+
     public static Post fromJSON(JSONObject obj) {
         JSONObject fileObj = obj.optJSONObject("file");
-        
+
         Post post = new Post(obj.optString("boardID"));
-        
+
         if (fileObj != null) {
             post.setFile(ChanFile.fromJSON(fileObj));
         }
-        
+
         post.setTime(obj.optLong("time"));
         post.setPostNumber(obj.optLong("postNumber"));
         post.setReplyTo(obj.optLong("replyTo"));
@@ -81,7 +81,7 @@ public class Post {
         post.setPosterID(obj.optString("posterID"));
         post.setCapcode(obj.optString("capcode"));
         post.setCountryCode(obj.optString("countryCode"));
-        
+
         if (post.isThread()) {
             post.setCustomSpoiler(obj.optInt("customSpoiler"));
             post.setReplyCount(obj.optInt("replyCount"));
@@ -89,18 +89,18 @@ public class Post {
             post.setBumpLimitHit(obj.optBoolean("bumpLimitHit"));
             post.setImageLimitHit(obj.optBoolean("imageLimitHit"));
         }
-        
+
         return post;
     }
-    
+
     public JSONObject toJSON() {
         JSONObject obj = new JSONObject();
-        
+
         try {
             if (file != null) {
                 obj.put("file", file.toJSON());
             }
-            
+
             obj.put("boardID", boardID);
             obj.put("time", time);
             obj.put("postNumber", postNumber);
@@ -113,7 +113,7 @@ public class Post {
             obj.put("posterID", posterID);
             obj.put("capcode", capcode);
             obj.put("countryCode", countryCode);
-            
+
             if (isThread()) {
                 obj.put("customSpoiler", customSpoiler);
                 obj.put("replyCount", replyCount);
@@ -121,21 +121,22 @@ public class Post {
                 obj.put("bumpLimitHit", bumpLimitHit);
                 obj.put("imageLimitHit", imageLimitHit);
             }
-        } catch (JSONException e) { }
-        
+        } catch (JSONException e) {
+        }
+
         return obj;
     }
-    
+
     @SuppressLint("DefaultLocale")
     protected Post(String boardID) {
         this.boardID = boardID.toLowerCase();
     }
-    
+
     @Override
     public String toString() {
         return toJSON().toString();
     }
-    
+
     public String getBoardID() {
         return this.boardID;
     }
@@ -275,34 +276,30 @@ public class Post {
     protected void setImageLimitHit(boolean imageLimitHit) {
         this.imageLimitHit = imageLimitHit;
     }
-    
+
     public boolean isThread() {
         return replyTo > 0;
     }
-    
+
     public boolean hasFile() {
         return file != null && !file.isDeleted();
     }
-    
+
     public URI getSmallFileURL() {
         if (!hasFile()) {
             return null;
         }
-        
-        return URI.create("http://thumbs.4chan.org/" 
-            + Uri.encode(boardID) 
-            + "/thumb/" 
-            + file.getSmallName());
+
+        return URI.create("http://thumbs.4chan.org/" + Uri.encode(boardID)
+            + "/thumb/" + file.getSmallName());
     }
-    
+
     public URI getFileURL() {
         if (!hasFile()) {
             return null;
         }
-        
-        return URI.create("http://images.4chan.org/" 
-            + Uri.encode(boardID) 
-            + "/src/" 
-            + file.getName());
+
+        return URI.create("http://images.4chan.org/" + Uri.encode(boardID)
+            + "/src/" + file.getName());
     }
 }

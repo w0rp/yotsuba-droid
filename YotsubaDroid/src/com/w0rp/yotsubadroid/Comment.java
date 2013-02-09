@@ -35,7 +35,7 @@ public class Comment {
             contentList.add(new Content(type, text, currentData));
         }
 
-        public void startElement (String uri, String name, String qName,
+        public void startElement(String uri, String name, String qName,
             Attributes atts) {
 
             state = ContentType.PLAIN;
@@ -67,11 +67,11 @@ public class Comment {
             }
         }
 
-        public void endElement (String uri, String name, String qName) {
+        public void endElement(String uri, String name, String qName) {
             state = ContentType.PLAIN;
         }
 
-        public void characters (char charList[], int start, int length) {
+        public void characters(char charList[], int start, int length) {
             String content = new String(charList, start, length);
 
             if (content.length() == 0) {
@@ -91,8 +91,7 @@ public class Comment {
         private String text;
         private Map<String, String> data;
 
-        public Content(ContentType type, String text,
-            Map<String, String> data) {
+        public Content(ContentType type, String text, Map<String, String> data) {
             this.type = type;
             this.text = text;
             this.data = data;
@@ -116,7 +115,7 @@ public class Comment {
 
         @Override
         public String toString() {
-            String out = "["  + this.type.toString() + ": " + this.text + "]";
+            String out = "[" + this.type.toString() + ": " + this.text + "]";
 
             if (data != null) {
                 out += data.toString();
@@ -132,7 +131,7 @@ public class Comment {
             + "</root>";
     }
 
-    private static List<Content> parse (String comment) {
+    private static List<Content> parse(String comment) {
         TagHandler handler = new TagHandler();
 
         try {
@@ -166,7 +165,7 @@ public class Comment {
                 sb.append(text, SpanBuilder.fg(QUOTE_COLOR));
             break;
             default:
-                // The rest don't matter for summaries.
+            // The rest don't matter for summaries.
             break;
             }
         }
