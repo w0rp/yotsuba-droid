@@ -4,7 +4,6 @@ TODO
 Essential Goals
 ---------------
 
-* Make quote text a nice shade of green all around.
 * Use If-Modified-Since logic for all JSON requests.
 * Add refresh buttons to board, catalog, and thread Activities.
 * Implement a proper layout for posts in thread view.
