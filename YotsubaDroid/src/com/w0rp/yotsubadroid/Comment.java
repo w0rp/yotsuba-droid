@@ -15,6 +15,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.w0rp.androidutils.SLog;
+import com.w0rp.androidutils.SpanBuilder;
 
 import android.graphics.Color;
 import android.text.Spanned;

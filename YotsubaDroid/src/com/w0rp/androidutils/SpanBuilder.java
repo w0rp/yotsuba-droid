@@ -1,4 +1,4 @@
-package com.w0rp.yotsubadroid;
+package com.w0rp.androidutils;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
