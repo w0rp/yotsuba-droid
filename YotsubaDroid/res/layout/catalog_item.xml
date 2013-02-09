@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400px"
+    android:layout_height="300px" 
+    android:paddingLeft="4px"
+    android:paddingRight="4px"
+>
+    <ImageView
+        android:id="@+id/catalog_item_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="thread"
+    />
+    <TextView
+        android:id="@+id/catalog_item_subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:background="#AA000000"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:singleLine="true"
+     />
+    
+    <TextView
+        android:id="@+id/catalog_item_comment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:background="#AA000000"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:singleLine="true"
+     />
+</RelativeLayout>
