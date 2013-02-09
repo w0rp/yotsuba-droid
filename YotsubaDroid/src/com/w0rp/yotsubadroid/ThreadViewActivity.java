@@ -10,19 +10,17 @@ public class ThreadViewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thread_view);
-        
+
         Intent intent = getIntent();
-        
+
         // Load the board from the intent data.
-        Board board = Yot.cachedBoard(intent.getStringExtra("boardID"));
+        String boardID = intent.getStringExtra("boardID");
         long threadID = intent.getLongExtra("threadID", 0);
-        
-        getActionBar().setTitle(board.getTitle() + " - " + threadID);
-        
+
         ThreadViewFragment frag = (ThreadViewFragment) getFragmentManager()
             .findFragmentById(R.id.thread_view_fragment);
-        
-        frag.setData(board.getID(), threadID);
+
+        frag.setData(boardID, threadID);
     }
 
     @Override
