@@ -68,7 +68,7 @@ public class Net {
 
     public static String base64Auth(String username, String password) {
         return Base64.encodeToString(
-            (Util.def(username) + ":" + Util.def(password)).getBytes(),
+            (Coerce.def(username) + ":" + Coerce.def(password)).getBytes(),
             Base64.NO_WRAP);
     }
 }

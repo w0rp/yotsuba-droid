@@ -98,18 +98,6 @@ public abstract class Util {
         }
     }
 
-    public static String def(String in) {
-        if (in == null) {
-            return "";
-        }
-
-        return in;
-    }
-
-    public static boolean empty(String in) {
-        return in == null || in.length() == 0;
-    }
-
     public static String traceString(Throwable tr) {
         StringWriter sw = new StringWriter();
         tr.printStackTrace(new PrintWriter(sw));
