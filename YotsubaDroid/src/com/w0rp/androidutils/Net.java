@@ -24,7 +24,7 @@ public class Net {
 
         public Request(InputStream stream, int responseCode) {
             if (stream == null) {
-                this.stream = Util.emptyInputStream();
+                this.stream = IO.emptyInputStream();
             } else {
                 this.stream = stream;
             }
@@ -54,7 +54,7 @@ public class Net {
          * @return All of the request data.
          */
         public String download() throws IOException {
-            return Util.streamToString(stream);
+            return IO.streamToString(stream);
         }
 
         /**

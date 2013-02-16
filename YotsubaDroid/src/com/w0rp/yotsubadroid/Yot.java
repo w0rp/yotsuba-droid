@@ -14,9 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.w0rp.androidutils.FileRotator;
+import com.w0rp.androidutils.IO;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.SLog;
-import com.w0rp.androidutils.Util;
 
 import android.app.Application;
 import android.content.Context;
@@ -157,8 +157,8 @@ public class Yot extends Application {
 
         try {
             FileOutputStream out = new FileOutputStream(outFile.getPath());
-            Util.stream(in, out);
-            Util.close(out);
+            IO.stream(in, out);
+            IO.close(out);
         } catch (Exception e) {
             SLog.e(e);
             return;
