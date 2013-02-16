@@ -138,7 +138,7 @@ public abstract class Iter {
      *
      * null will be tolerated in all cases.
      */
-    public static <T> Iterable<T> iter(Class<T> cls, Iterator<?> iterator) {
+    public static <T> Iterable<T> cast(Class<T> cls, Iterator<?> iterator) {
         return new IteratorIterable<T>(cls, iterator);
     }
 }

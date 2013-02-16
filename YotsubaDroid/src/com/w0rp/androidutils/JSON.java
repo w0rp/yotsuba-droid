@@ -68,7 +68,7 @@ public abstract class JSON {
      * @return An Iterator through the values of the JSONArray.
      */
     public static Iterable<Object> iter(JSONArray arr) {
-        return Iter.iter(Object.class, new JSONArrayIterator(arr));
+        return Iter.cast(Object.class, new JSONArrayIterator(arr));
     }
 
     /**
@@ -109,6 +109,6 @@ public abstract class JSON {
             return new NullIterable<String>();
         }
 
-        return Iter.iter(String.class, obj.keys());
+        return Iter.cast(String.class, obj.keys());
     }
 }
