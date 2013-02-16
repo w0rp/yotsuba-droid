@@ -42,10 +42,9 @@ public abstract class Iter {
 
             // Search for the next valid instance.
             while (inIterator.hasNext()) {
-                Object obj = (Object) inIterator.next();
+                current = Coerce.cast(cls, inIterator.next());
 
-                if (cls.isInstance(obj)) {
-                    current = cls.cast(obj);
+                if (current != null) {
                     return true;
                 }
             }
