@@ -1,12 +1,10 @@
 package com.w0rp.androidutils;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.w0rp.androidutils.Iter.NullIterable;
 
 /*
  * This class provides various utility methods for constructing and
@@ -33,9 +31,16 @@ public abstract class JSON {
 
         @Override
         public void remove() {
+            // TODO: Implement this?
         }
     }
 
+    /**
+     * Use this method for when you reasonably expect parsing to succeed.
+     *
+     * @param jsonString A JSON string to load.
+     * @return A valid JSONObject, empty if parsing failed.
+     */
     public static JSONObject obj(String jsonString) {
         try {
             return new JSONObject(jsonString);
@@ -44,92 +49,66 @@ public abstract class JSON {
         }
     }
 
+    /**
+     * Use this method for when you reasonably expect parsing to succeed.
+     *
+     * @param jsonString A JSON string to load.
+     * @return A valid JSONArray, empty if parsing failed.
+     */
     public static JSONArray arr(String jsonString) {
         try {
             return new JSONArray(jsonString);
         } catch (Exception e) {
             return new JSONArray();
         }
-
     }
 
-    public static List<String> keys(JSONObject obj) {
-        List<String> keyList = new ArrayList<String>();
-
-        if (obj == null) {
-            return keyList;
-        }
-
-        Iterator<?> keyIter = obj.keys();
-
-        while (keyIter.hasNext()) {
-            keyList.add((String) keyIter.next());
-        }
-
-        return keyList;
-    }
-
+    /**
+     * @param arr A JSONArray. null will be tolerated.
+     * @return An Iterator through the values of the JSONArray.
+     */
     public static Iterable<Object> iter(JSONArray arr) {
-        return Iter.iter(new JSONArrayIterator(arr));
+        return Iter.iter(Object.class, new JSONArrayIterator(arr));
     }
 
+    /**
+     * @param arr A JSONArray. null will be tolerated.
+     * @return An Iterator through the JSONObject values of the JSONArray.
+     */
+    public static Iterable<JSONObject> objIter(JSONArray arr) {
+        return Iter.cast(JSONObject.class, iter(arr));
+    }
+
+    /**
+     * @param obj An object to pull a JSONArray from.
+     * @param key The key for the JSONArray.
+     * @return An Iterator through the values of the JSONArray.
+     */
     public static Iterable<Object> iter(JSONObject obj, String key) {
         return iter(obj != null ? obj.optJSONArray(key) : null);
     }
 
-    public static Set<String> stringSet(JSONArray arr) {
-        return Iter.stringSet(iter(arr));
+    /**
+     * @param obj An object to pull a JSONArray from.
+     * @param key The key for the JSONArray.
+     * @return An Iterator through the JSONObject values of the JSONArray.
+     */
+    public static Iterable<JSONObject> objIter(JSONObject obj, String key) {
+        return Iter.cast(JSONObject.class, iter(obj, key));
     }
 
-    public static Set<String> stringSet(JSONObject obj, String key) {
-        return Iter.stringSet(iter(obj, key));
-    }
-
-    public static List<String> stringList(JSONArray arr) {
-        return Iter.stringList(iter(arr));
-    }
-
-    public static List<String> stringList(JSONObject obj, String key) {
-        return Iter.stringList(iter(obj, key));
-    }
-
-    public static List<JSONArray> arrList(Iterable<Object> iter) {
-        List<JSONArray> list = new ArrayList<JSONArray>();
-
-        for (Object obj : iter) {
-            if (obj instanceof JSONArray) {
-                list.add((JSONArray) obj);
-            }
+    /**
+     * Produce an iterable through a JSONObject's keys.
+     *
+     * null will be tolerated in all cases.
+     *
+     * @return An Iterable iterating through an object's keys.
+     */
+    public static Iterable<String> keys(JSONObject obj) {
+        if (obj == null) {
+            return new NullIterable<String>();
         }
 
-        return list;
-    }
-
-    public static List<JSONArray> arrList(JSONArray arr) {
-        return arrList(iter(arr));
-    }
-
-    public static List<JSONArray> arrList(JSONObject obj, String key) {
-        return arrList(iter(obj, key));
-    }
-
-    public static List<JSONObject> objList(Iterable<Object> iter) {
-        List<JSONObject> list = new ArrayList<JSONObject>();
-
-        for (Object obj : iter) {
-            if (obj instanceof JSONObject) {
-                list.add((JSONObject) obj);
-            }
-        }
-
-        return list;
-    }
-
-    public static List<JSONObject> objList(JSONArray arr) {
-        return objList(iter(arr));
-    }
-
-    public static List<JSONObject> objList(JSONObject obj, String key) {
-        return objList(iter(obj, key));
+        return Iter.iter(String.class, obj.keys());
     }
 }

@@ -6,14 +6,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/*
+/**
  * This namespace defines utility functions for coercion of types and values.
  *
+ * cast() is a helper method for instanceof and cast.
  * def() coerces a default value for a nullable type.
  * len() coerces a length for a nullable type. (0 for null)
  * empty(x) returns len(x) == 0;
  */
 public abstract class Coerce {
+    /**
+     * Attempt to cast a reference to an given class.
+     *
+     * @param cls A class to cast the reference to.
+     * @param ref A reference to cast.
+     * @return The reference casted to an instance of T, or null.
+     */
+    public static <T> T cast(Class<T> cls, Object ref) {
+        if (cls.isInstance(ref)) {
+            return cls.cast(ref);
+        }
+
+        return null;
+    }
+
     public static <T> Collection<T> def(Collection<T> in) {
         if (in == null) {
             return Collections.emptyList();

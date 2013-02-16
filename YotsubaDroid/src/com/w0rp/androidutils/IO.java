@@ -12,6 +12,7 @@ public abstract class IO {
         @Override public int read() { return -1; }
     }
 
+    // A single instance can be reused, saving memory.
     private static final InputStream nullInputStream = new NullInputStream();
 
     /**

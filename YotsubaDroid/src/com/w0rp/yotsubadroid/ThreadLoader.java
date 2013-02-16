@@ -44,7 +44,7 @@ public class ThreadLoader extends PostLoader {
             return postList;
         }
 
-        for (JSONObject postObj : JSON.objList(threadObj, "posts")) {
+        for (JSONObject postObj : JSON.objIter(threadObj, "posts")) {
             Post post = Post.fromChanJSON(getBoardID(), postObj);
             postList.add(post);
         }

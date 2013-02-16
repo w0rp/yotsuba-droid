@@ -41,8 +41,8 @@ public class CatalogLoader extends PostLoader {
             return postList;
         }
 
-        for (JSONObject pageObj : JSON.objList(arr)) {
-            for (JSONObject postObj : JSON.objList(pageObj, "threads")) {
+        for (JSONObject pageObj : JSON.objIter(arr)) {
+            for (JSONObject postObj : JSON.objIter(pageObj, "threads")) {
                 Post post = Post.fromChanJSON(getBoardID(), postObj);
                 postList.add(post);
             }

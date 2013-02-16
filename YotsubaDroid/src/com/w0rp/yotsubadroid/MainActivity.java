@@ -35,7 +35,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
                 return;
             }
 
-            for (JSONObject boardObj : JSON.objList(
+            for (JSONObject boardObj : JSON.objIter(
             JSON.obj(result), "boards")) {
                 Board board = Yot.cachedBoard(boardObj.optString("board"));
 

@@ -26,7 +26,7 @@ public abstract class PostListReceiver extends BasicReceiver {
 
             List<Post> postList = new ArrayList<Post>();
 
-            for (JSONObject obj : JSON.objList(jsonPostList)) {
+            for (JSONObject obj : JSON.objIter(jsonPostList)) {
                 postList.add(Post.fromJSON(obj));
             }
 
