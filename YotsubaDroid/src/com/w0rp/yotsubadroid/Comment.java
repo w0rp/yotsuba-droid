@@ -22,6 +22,7 @@ import android.text.Spanned;
 
 public class Comment {
     public static final int QUOTE_COLOR = Color.rgb(0, 255, 0);
+    public static final int QUOTELINK_COLOR = Color.rgb(255, 0, 0);
 
     private static class TagHandler extends DefaultHandler {
         List<Content> contentList;
@@ -187,12 +188,12 @@ public class Comment {
                 sb.append(content.getText(), SpanBuilder.fg(QUOTE_COLOR));
             break;
             case DEADLINK:
-                sb.append(content.getText(), SpanBuilder.fg(QUOTE_COLOR),
+                sb.append(content.getText(), SpanBuilder.fg(QUOTELINK_COLOR),
                     SpanBuilder.strike());
             break;
             case QUOTELINK:
                 // TODO: Add link behaviour here.
-                sb.append(content.getText(), SpanBuilder.fg(QUOTE_COLOR));
+                sb.append(content.getText(), SpanBuilder.fg(QUOTELINK_COLOR));
             break;
             case SPOILER:
                 // TODO: Add spoiler tapping behaviour here.

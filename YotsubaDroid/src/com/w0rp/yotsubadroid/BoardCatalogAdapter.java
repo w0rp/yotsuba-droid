@@ -1,5 +1,7 @@
 package com.w0rp.yotsubadroid;
 
+import com.w0rp.androidutils.Util;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,14 +45,7 @@ public class BoardCatalogAdapter extends PostListAdapter {
         TextView txtSubject = (TextView) item
             .findViewById(R.id.catalog_item_subject);
 
-        txtSubject.setText(post.getSubject());
-
-        if (post.getSubject().trim().length() == 0) {
-            txtSubject.setVisibility(View.GONE);
-        } else {
-            txtSubject.setVisibility(View.VISIBLE);
-            txtSubject.setText(post.getSubject().trim());
-        }
+        Util.textOrHide(txtSubject, post.getSubject().trim());
 
         TextView txtComment = (TextView) item
             .findViewById(R.id.catalog_item_comment);

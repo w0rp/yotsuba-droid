@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
 
 public class ThreadViewFragment extends Fragment {
@@ -64,12 +63,9 @@ public class ThreadViewFragment extends Fragment {
         Bundle savedInstanceState) {
         threadReceiver = new ThreadReceiver(getActivity());
 
-        ListView listView = new ListView(getActivity());
-
+        ListView listView = (ListView) inflater.inflate(
+            R.layout.thread_post_list, container);
         listView.setAdapter(threadAdapter);
-
-        listView.setLayoutParams(new LayoutParams(
-            LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         return listView;
     }

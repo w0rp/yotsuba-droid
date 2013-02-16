@@ -7,6 +7,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import android.content.IntentFilter;
+import android.view.View;
+import android.widget.TextView;
 
 public abstract class Util {
     public static String traceString(Throwable tr) {
@@ -47,5 +49,19 @@ public abstract class Util {
         TimeUnit unit) {
         return new ThreadPoolExecutor(maxSize, maxSize, wait, unit,
             new LinkedBlockingDeque<Runnable>());
+    }
+
+    /**
+     * Show some text in a TextView if the text is non-empty.
+     * Otherwise, hide the TextView.
+     */
+    public static void textOrHide(TextView textView, String text) {
+        if (text == null || text.length() == 0) {
+            textView.setVisibility(View.GONE);
+            textView.setText("");
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        }
     }
 }

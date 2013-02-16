@@ -1,6 +1,8 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
+import java.text.DateFormat;
+import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -153,6 +155,7 @@ public class Post {
         return time;
     }
 
+
     protected void setTime(long time) {
         this.time = time;
     }
@@ -301,5 +304,13 @@ public class Post {
 
         return URI.create("http://images.4chan.org/" + Uri.encode(boardID)
             + "/src/" + file.getName());
+    }
+
+    /**
+     * @return The time and date in a locale dependent format.
+     */
+    public String getFormattedTime() {
+        // Date expects milliseconds, not seconds.
+        return DateFormat.getDateTimeInstance().format(new Date(time * 1000));
     }
 }
