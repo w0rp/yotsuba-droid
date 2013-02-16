@@ -6,8 +6,10 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.w0rp.androidutils.BasicReceiver;
+import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.Net;
+import com.w0rp.androidutils.SingleHTTPRequestTask;
 import com.w0rp.yotsubadroid.R;
 
 import android.os.Bundle;
@@ -23,11 +25,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MainActivity extends Activity implements OnItemClickListener {
-    private class BoardDownloadTask extends SmallDownloadTask {
+    private class BoardDownloadTask extends SingleHTTPRequestTask {
         @Override
-        protected void handleDownload(URI uri, int responseCode, String result) {
-            if (responseCode >= 400) {
-                // TODO: Notify here somehow.
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            if (Coerce.empty(result)) {
+                // TODO: Notify of failure here somehow.
                 return;
             }
 

@@ -2,9 +2,11 @@ package com.w0rp.androidutils;
 
 import android.content.*;
 
-/*
+/**
  * This is a BroadcastReceiver which is context-aware, and
- * automatically registers itself.
+ * automatically registers itself. The receiver will be registered with the
+ * class name, so each receiver instance should represent a link to a single
+ * class definition.
  *
  * The receiver can be registered and unregistered with
  * the reg() and unreg() methods.
