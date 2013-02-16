@@ -12,34 +12,75 @@ import org.apache.http.message.BasicHeader;
 import android.util.Base64;
 
 public class Net {
-    public static InputStream openRequest(HttpUriRequest request)
-        throws IOException {
-        HttpResponse response = null;
+    public static class Request {
+        public static final int GENERIC_FAILURE = 600;
 
-        response = new DefaultHttpClient().execute(request);
+        private InputStream stream;
+        private int responseCode = GENERIC_FAILURE;
 
-        HttpEntity entity = response.getEntity();
-        InputStream stream = entity.getContent();
+        public Request(InputStream stream) {
+            this(stream, GENERIC_FAILURE);
+        }
 
-        return stream;
-    }
+        public Request(InputStream stream, int responseCode) {
+            if (stream == null) {
+                this.stream = Util.emptyInputStream();
+            } else {
+                this.stream = stream;
+            }
 
-    public static InputStream openRequest(URI uri) throws IOException {
-        return openRequest(new HttpGet(uri));
-    }
+            this.responseCode = responseCode;
+        }
 
-    public static String download(HttpUriRequest request) throws IOException {
-        InputStream is = openRequest(request);
+        /**
+         * @return An input stream to download the request with.
+         */
+        public InputStream getStream() {
+            return stream;
+        }
 
-        try {
-            return Util.streamToString(is);
-        } finally {
-            Util.close(is);
+        /**
+         * @return An HTTP response code.
+         */
+        public int getResponseCode() {
+            return responseCode;
+        }
+
+        /**
+         * Download the entire request to a string.
+         *
+         * The InputStream will be automatically closed.
+         *
+         * @return All of the request data.
+         */
+        public String download() throws IOException {
+            return Util.streamToString(stream);
+        }
+
+        /**
+         * @return true if the response code is >= 400.
+         */
+        public boolean failure() {
+            return responseCode >= 400;
         }
     }
 
-    public static String download(URI uri) throws IOException {
-        return download(new HttpGet(uri));
+    public static Request openRequest(HttpUriRequest request) {
+        InputStream stream = null;
+        int responseCode = Request.GENERIC_FAILURE;
+
+        try {
+            HttpResponse response = new DefaultHttpClient().execute(request);
+            HttpEntity entity = response.getEntity();
+            stream = entity.getContent();
+            responseCode = response.getStatusLine().getStatusCode();
+        } catch (IOException e) { }
+
+        return new Request(stream, responseCode);
+    }
+
+    public static Request openRequest(URI uri) {
+        return openRequest(new HttpGet(uri));
     }
 
     /*

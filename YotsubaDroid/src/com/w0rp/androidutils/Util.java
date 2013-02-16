@@ -19,6 +19,10 @@ public abstract class Util {
         @Override public void remove() { }
     }
 
+    public static class NullInputStream extends InputStream {
+        @Override public int read() { return -1; }
+    }
+
     public static class IteratorIterable<T> implements Iterable<T> {
         private Iterator<T> iterator;
 
@@ -34,6 +38,12 @@ public abstract class Util {
         public Iterator<T> iterator() {
             return iterator;
         }
+    }
+
+    private static final InputStream nullInputStream = new NullInputStream();
+
+    public static InputStream emptyInputStream() {
+        return nullInputStream;
     }
 
     /*
@@ -75,19 +85,33 @@ public abstract class Util {
         return list;
     }
 
+    /*
+     * Collection an InputStream in a string.
+     *
+     * The InputStream will be automatically closed.
+     */
     public static String streamToString(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 
         String line = null;
 
-        while ((line = reader.readLine()) != null) {
-            sb.append(line + "\n");
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } finally {
+            Util.close(is);
         }
 
         return sb.toString();
     }
 
+    /*
+     * Transfer an InputStream to an OutputStream.
+     *
+     * Neither stream will be automatically closed.
+     */
     public static void stream(InputStream in, OutputStream out)
         throws IOException {
         byte[] buffer = new byte[4096];

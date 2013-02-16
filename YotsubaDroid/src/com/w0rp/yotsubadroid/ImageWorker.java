@@ -1,6 +1,5 @@
 package com.w0rp.yotsubadroid;
 
-import java.io.InputStream;
 import java.net.URI;
 
 import com.w0rp.androidutils.Net;
@@ -27,15 +26,14 @@ public class ImageWorker implements Runnable {
 
     @Override
     public void run() {
-        InputStream stream = null;
+        Net.Request request = Net.openRequest(url);
 
-        try {
-            stream = Net.openRequest(url);
-        } catch (Exception e) {
+        if (request.failure()) {
+            // TODO: Deal with failure.
             return;
         }
 
-        Yot.saveImage(filename, stream);
+        Yot.saveImage(filename, request.getStream());
 
         if (listener != null) {
             Yot.runOnUiThread(new Runnable() {

@@ -36,7 +36,7 @@ public abstract class PostLoader extends AsyncTask<Void, Void, List<Post>> {
         String catalogJson = null;
 
         try {
-            catalogJson = Net.download(getURI());
+            catalogJson = Net.openRequest(getURI()).download();
         } catch (IOException e) {
             return null;
         }
