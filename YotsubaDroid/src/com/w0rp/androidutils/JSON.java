@@ -70,7 +70,7 @@ public abstract class JSON {
     }
 
     public static Iterable<Object> iter(JSONArray arr) {
-        return Util.iter(new JSONArrayIterator(arr));
+        return Iter.iter(new JSONArrayIterator(arr));
     }
 
     public static Iterable<Object> iter(JSONObject obj, String key) {
@@ -78,19 +78,19 @@ public abstract class JSON {
     }
 
     public static Set<String> stringSet(JSONArray arr) {
-        return Util.stringSet(iter(arr));
+        return Iter.stringSet(iter(arr));
     }
 
     public static Set<String> stringSet(JSONObject obj, String key) {
-        return Util.stringSet(iter(obj, key));
+        return Iter.stringSet(iter(obj, key));
     }
 
     public static List<String> stringList(JSONArray arr) {
-        return Util.stringList(iter(arr));
+        return Iter.stringList(iter(arr));
     }
 
     public static List<String> stringList(JSONObject obj, String key) {
-        return Util.stringList(iter(obj, key));
+        return Iter.stringList(iter(obj, key));
     }
 
     public static List<JSONArray> arrList(Iterable<Object> iter) {
