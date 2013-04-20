@@ -60,31 +60,35 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <RelativeLayout 
+    <LinearLayout 
         android:id="@+id/post_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:paddingTop="5dp" >
-
-        <ImageView
-            android:id="@+id/post_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:contentDescription="Post Image"
-            android:src="@drawable/filedeleted" />
+        
+        <RelativeLayout 
+            android:id="@+id/post_image_layout"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
+        >
+            <ImageView
+                android:id="@+id/post_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:contentDescription="Post Image"
+                android:adjustViewBounds="true"
+                android:src="@drawable/filedeleted" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/post_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/post_image" 
             android:textSize="10pt"
             android:paddingLeft="5dp"
             />
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>

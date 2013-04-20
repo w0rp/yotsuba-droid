@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ThreadViewAdapter extends PostListAdapter {
@@ -45,8 +46,19 @@ public class ThreadViewAdapter extends PostListAdapter {
         TextView txtNumber = (TextView) item.findViewById(R.id.post_number);
         txtNumber.setText("#" + Long.toString(post.getPostNumber()));
 
-        // Load the image.
+        RelativeLayout imageLayout =
+            (RelativeLayout) item.findViewById(R.id.post_image_layout);
+
         ImageView imageView = (ImageView) item.findViewById(R.id.post_image);
+
+        if (post.getFile() != null) {
+            // Show layouts which have an image.
+            imageLayout.setVisibility(View.VISIBLE);
+        } else {
+            // Hide layouts which do not have an image.
+            imageLayout.setVisibility(View.GONE);
+        }
+
         loadImage(post, imageView);
 
         // Load the comment.
