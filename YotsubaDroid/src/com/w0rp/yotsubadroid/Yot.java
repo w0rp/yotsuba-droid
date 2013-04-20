@@ -30,8 +30,6 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 
 public class Yot extends Application {
-    public static final int CAT_ITEM_WIDTH = 400;
-    public static final int CAT_ITEM_HEIGHT = 300;
     public static final String API_URL = "https://api.4chan.org/";
 
     private static Context context;

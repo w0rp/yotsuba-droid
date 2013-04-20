@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.GridView;
 
 public class BoardCatalogFragment extends Fragment
@@ -51,14 +50,10 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         catalogReceiver = new CatalogReceiver();
         Async.registerClass(getActivity(), catalogReceiver);
 
-        GridView grid = new GridView(getActivity());
+        GridView grid = (GridView) inflater.inflate(
+            R.layout.catalog_grid, container);
 
-        grid.setNumColumns(-1);
-        grid.setColumnWidth(Yot.CAT_ITEM_WIDTH);
         grid.setAdapter(catalogAdapter);
-
-        grid.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT));
 
         return grid;
     }
