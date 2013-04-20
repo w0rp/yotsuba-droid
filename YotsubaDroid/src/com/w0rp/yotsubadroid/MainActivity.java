@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.BasicReceiver;
+import com.w0rp.androidutils.Async;
 import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.Net;
@@ -14,6 +14,7 @@ import com.w0rp.yotsubadroid.R;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
@@ -49,11 +50,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         }
     }
 
-    private class BoardListReceiver extends BasicReceiver {
-        public BoardListReceiver(Context context) {
-            super(context);
-        }
-
+    private class BoardListReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             populateBoardList();
@@ -82,7 +79,8 @@ public class MainActivity extends Activity implements OnItemClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        boardListReceiver = new BoardListReceiver(this);
+        boardListReceiver = new BoardListReceiver();
+        Async.registerClass(this, boardListReceiver);
 
         ListView boardListView = (ListView) findViewById(R.id.board_list);
         boardListView.setOnItemClickListener(this);
@@ -112,7 +110,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
     protected void onDestroy() {
         super.onDestroy();
 
-        boardListReceiver.unreg();
+        unregisterReceiver(boardListReceiver);
     }
 
     @Override

@@ -7,17 +7,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.BasicReceiver;
 import com.w0rp.androidutils.JSON;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-public abstract class PostListReceiver extends BasicReceiver {
-    public PostListReceiver(Context context) {
-        super(context);
-    }
-
+public abstract class PostListReceiver extends BroadcastReceiver {
     @Override
     public final void onReceive(Context context, Intent intent) {
         try {
@@ -37,5 +33,4 @@ public abstract class PostListReceiver extends BasicReceiver {
     }
 
     public abstract void onReceivePostList(List<Post> postList);
-
 }

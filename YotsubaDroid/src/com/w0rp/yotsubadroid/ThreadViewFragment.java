@@ -2,10 +2,10 @@ package com.w0rp.yotsubadroid;
 
 import java.util.List;
 
-import com.w0rp.androidutils.BasicReceiver;
+import com.w0rp.androidutils.Async;
 
 import android.app.Fragment;
-import android.content.Context;
+import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +14,6 @@ import android.widget.ListView;
 
 public class ThreadViewFragment extends Fragment {
     public class ThreadReceiver extends PostListReceiver {
-        public ThreadReceiver(Context context) {
-            super(context);
-        }
-
         @Override
         public void onReceivePostList(List<Post> postList) {
             if (postList.size() > 0) {
@@ -33,7 +29,7 @@ public class ThreadViewFragment extends Fragment {
     private String boardID;
     private long threadID = 0;
     private ThreadViewAdapter threadAdapter;
-    private BasicReceiver threadReceiver;
+    private BroadcastReceiver threadReceiver;
     private ThreadLoader threadLoader;
 
     public ThreadViewFragment() {
@@ -61,7 +57,8 @@ public class ThreadViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-        threadReceiver = new ThreadReceiver(getActivity());
+        threadReceiver = new ThreadReceiver();
+        Async.registerClass(getActivity(), threadReceiver);
 
         ListView listView = (ListView) inflater.inflate(
             R.layout.thread_post_list, container);
@@ -74,6 +71,6 @@ public class ThreadViewFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        threadReceiver.unreg();
+        getActivity().unregisterReceiver(threadReceiver);
     }
 }

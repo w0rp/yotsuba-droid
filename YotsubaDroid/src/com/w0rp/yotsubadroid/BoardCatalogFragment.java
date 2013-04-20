@@ -2,10 +2,10 @@ package com.w0rp.yotsubadroid;
 
 import java.util.List;
 
-import com.w0rp.androidutils.BasicReceiver;
+import com.w0rp.androidutils.Async;
 
 import android.app.Fragment;
-import android.content.Context;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,10 +20,6 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     public static final int CAT_ITEM_HEIGHT = 200;
 
     public class CatalogReceiver extends PostListReceiver {
-        public CatalogReceiver(Context context) {
-            super(context);
-        }
-
         @Override
         public void onReceivePostList(List<Post> postList) {
             catalogAdapter.setPostList(postList);
@@ -32,7 +28,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
 
     private String boardID;
     private BoardCatalogAdapter catalogAdapter;
-    private BasicReceiver catalogReceiver;
+    private BroadcastReceiver catalogReceiver;
     private CatalogLoader catalogLoader;
 
     public BoardCatalogFragment() {
@@ -52,7 +48,8 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-        catalogReceiver = new CatalogReceiver(getActivity());
+        catalogReceiver = new CatalogReceiver();
+        Async.registerClass(getActivity(), catalogReceiver);
 
         GridView grid = new GridView(getActivity());
 
@@ -70,7 +67,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     public void onDestroy() {
         super.onDestroy();
 
-        catalogReceiver.unreg();
+        getActivity().unregisterReceiver(catalogReceiver);
     }
 
     public void setBoardID(String boardID) {
