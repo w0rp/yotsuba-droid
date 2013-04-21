@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toLeftOf="@+id/post_number" 
-                android:textSize="6pt"
+                android:textSize="8pt"
                 android:textColor="#FFFFFF" />
 
             <TextView 
@@ -50,12 +50,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true" 
+                android:layout_toLeftOf="@+id/post_copy_icon" 
                 android:textStyle="italic"
-                android:textSize="6pt"
+                android:textSize="8pt"
                 android:textColor="#AACCFF"
                 android:layout_marginLeft="5dp" 
-                android:layout_marginRight="5dp" />
+                android:layout_marginRight="2dp" />
+            
+            <ImageButton
+                android:id="@+id/post_copy_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true" 
+                android:src="@drawable/ic_menu_copy_holo_dark"
+                android:contentDescription="@string/post_copy" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -87,7 +96,7 @@
             android:layout_height="wrap_content"
             android:textSize="10pt"
             android:paddingLeft="5dp"
-            android:textIsSelectable="true"
+            android:autoLink="web"
         />
     </LinearLayout>
 </LinearLayout>

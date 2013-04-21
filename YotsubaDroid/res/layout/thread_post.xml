@@ -27,7 +27,6 @@
             android:orientation="horizontal"
             android:baselineAligned="false"
         >
-            
             <RelativeLayout 
                 android:id="@+id/post_image_layout"
                 android:layout_width="0dp"
@@ -45,47 +44,55 @@
                     android:src="@drawable/filedeleted" />
             </RelativeLayout>
         
-            
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="65"
             >
-                    <TextView 
-                        android:id="@+id/post_number"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true" 
-                        android:textStyle="italic"
-                        android:textSize="6pt"
-                        android:textColor="#AACCFF"
-                        android:layout_marginRight="5dp" />
-        
-                    <TextView
-                        android:id="@+id/post_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true" 
-                        android:layout_toLeftOf="@id/post_number"
-                        android:textSize="6pt"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginRight="2dp" />
-                    
-                    <TextView 
-                        android:id="@+id/post_poster_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/post_number"
-                        android:gravity="right"
-                        android:textSize="8pt"
-                        android:textStyle="italic"
-                        android:textColor="#FFFFFF"
-                        android:layout_marginRight="2dp" 
-                        android:includeFontPadding="false"
-                        />
-                </RelativeLayout>
-            </LinearLayout>
+                <ImageButton
+                    android:id="@+id/post_copy_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true" 
+                    android:src="@drawable/ic_menu_copy_holo_dark"
+                    android:contentDescription="@string/post_copy" />
+                
+                <TextView 
+                    android:id="@+id/post_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@id/post_copy_icon"
+                    android:textStyle="italic"
+                    android:textSize="6pt"
+                    android:textColor="#AACCFF"
+                    android:layout_marginRight="2dp" />
+                
+                <TextView
+                    android:id="@+id/post_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true" 
+                    android:layout_toLeftOf="@id/post_number"
+                    android:textSize="6pt"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginRight="2dp" />
+                
+                <TextView 
+                    android:id="@+id/post_poster_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/post_copy_icon"
+                    android:gravity="right"
+                    android:textSize="8pt"
+                    android:textStyle="italic"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginRight="2dp" 
+                    android:includeFontPadding="false"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -94,6 +101,6 @@
         android:layout_height="wrap_content"
         android:textSize="8pt"
         android:paddingLeft="5dp"
-        android:textIsSelectable="true"
+        android:autoLink="web"
     />
 </LinearLayout>

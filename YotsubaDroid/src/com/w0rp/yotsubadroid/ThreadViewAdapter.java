@@ -1,8 +1,9 @@
 package com.w0rp.yotsubadroid;
 
 import com.w0rp.androidutils.Util;
+import com.w0rp.yotsubadroid.ChanHTML.TextGenerator;
 
-import android.text.util.Linkify;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,14 +13,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ThreadViewAdapter extends PostListAdapter {
-    public static interface ImageClickHandler {
-        public void onClick(Post post);
+    public static interface ThreadInteractor {
+        public void onImageClick(Post post);
+        public void onTextCopy(Post post);
     }
 
-    private final ImageClickHandler clickHandler;
+    private final ThreadInteractor interactor;
 
-    public ThreadViewAdapter(ImageClickHandler clickHandler) {
-        this.clickHandler = clickHandler;
+    public ThreadViewAdapter(ThreadInteractor interactor) {
+        this.interactor = interactor;
     }
 
     @Override
@@ -69,8 +71,8 @@ public class ThreadViewAdapter extends PostListAdapter {
 
             imageView.setOnClickListener(new OnClickListener() {
                 @Override public void onClick(View v) {
-                    if (clickHandler != null) {
-                        clickHandler.onClick(post);
+                    if (interactor != null) {
+                        interactor.onImageClick(post);
                     }
                 }
             });
@@ -88,9 +90,20 @@ public class ThreadViewAdapter extends PostListAdapter {
         } else {
             // Fill the fields with formatted text otherwise.
             txtComment.setVisibility(View.VISIBLE);
-            txtComment.setText(Comment.fullText(post.getComment()));
-            Linkify.addLinks(txtComment, Linkify.WEB_URLS);
+            // We need to set this so ClickableSpans will work.
+            txtComment.setMovementMethod(LinkMovementMethod.getInstance());
+            new TextGenerator(txtComment, post.getComment()).styleText();
         }
+
+        View btnCopy = item.findViewById(R.id.post_copy_icon);
+
+        btnCopy.setOnClickListener(new OnClickListener() {
+            @Override public void onClick(View v) {
+                if (interactor != null) {
+                    interactor.onTextCopy(post);
+                }
+            }
+        });
 
         return item;
     }

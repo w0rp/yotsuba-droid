@@ -54,7 +54,7 @@ public class BoardCatalogAdapter extends PostListAdapter {
             txtComment.setVisibility(View.GONE);
         } else {
             txtComment.setVisibility(View.VISIBLE);
-            txtComment.setText(Comment.summaryText(post.getComment()));
+            txtComment.setText(ChanHTML.summaryText(post.getComment()));
         }
 
         ImageView imageView = (ImageView) item

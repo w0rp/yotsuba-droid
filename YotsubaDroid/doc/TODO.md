@@ -6,7 +6,6 @@ Essential Goals
 
 * Use If-Modified-Since logic for all JSON requests.
 * Add refresh buttons to board, catalog, and thread Activities.
-* Make spoilers text sections clickable for revealing spoiler text.
 * Make post links clickable for links inside the thread. (Automated Scrolling)
 * Parse name HTML.
     * & escapes.
