@@ -94,6 +94,7 @@ public class ChanHTML {
 
                 switch (content.getType()) {
                 case PLAIN:
+                case UNKNOWN:
                     sb.append(content.getText());
                 break;
                 case QUOTE:
@@ -162,6 +163,8 @@ public class ChanHTML {
                     state = ContentType.QUOTE;
                 } else if ("deadlink".equals(spanClass)) {
                     state = ContentType.DEADLINK;
+                } else {
+                    state = ContentType.UNKNOWN;
                 }
             } else if (name.equals("a")) {
                 String aClass = atts.getValue("class");
@@ -174,6 +177,8 @@ public class ChanHTML {
                     // If 1234 matches the thread later, we'll know
                     // that we have an inner-thread quote link.
                 }
+            } else {
+                state = ContentType.UNKNOWN;
             }
         }
 
@@ -193,7 +198,12 @@ public class ChanHTML {
     }
 
     public static enum ContentType {
-        PLAIN, SPOILER, QUOTE, DEADLINK, QUOTELINK
+        UNKNOWN,
+        PLAIN,
+        SPOILER,
+        QUOTE,
+        DEADLINK,
+        QUOTELINK
     }
 
     public static class Content {
@@ -237,8 +247,12 @@ public class ChanHTML {
     }
 
     private static String xmlify(String comment) {
+        // TODO: Use smart Regex here.
+        // The span replace here is here to fix some broken 4chan API
+        // name field nonsense.
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<root>"
             + comment.replace("<br>", "<br />").replace("<wbr>", "")
+            .replace("</span> <span class=\"commentpostername\">", " ")
             + "</root>";
     }
 

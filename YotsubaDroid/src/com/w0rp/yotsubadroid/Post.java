@@ -291,6 +291,12 @@ public class Post {
         return file != null && !file.isDeleted();
     }
 
+    public boolean isModPost() {
+        // Looking for this bit of HTML is rather unfortunately the only
+        // actually reliable means of determining this.
+        return getPosterName().contains("<span class=\"commentpostername\"");
+    }
+
     public URI getSmallFileURL() {
         if (!hasFile()) {
             return null;

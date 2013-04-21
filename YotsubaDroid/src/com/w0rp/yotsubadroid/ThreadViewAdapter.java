@@ -1,5 +1,6 @@
 package com.w0rp.yotsubadroid;
 
+import com.w0rp.androidutils.SpanBuilder;
 import com.w0rp.androidutils.Util;
 import com.w0rp.yotsubadroid.ChanHTML.TextGenerator;
 
@@ -24,19 +25,7 @@ public class ThreadViewAdapter extends PostListAdapter {
         this.interactor = interactor;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View item = convertView;
-
-        if (item == null) {
-            LayoutInflater inf = LayoutInflater.from(parent.getContext());
-
-            item = inf.inflate(R.layout.thread_post, parent, false);
-        }
-
-        final Post post = (Post) getItem(position);
-
-        // Load the subject.
+    private void renderSubject(int position, View item, Post post) {
         TextView txtSubject = (TextView) item.findViewById(R.id.post_subject);
 
         if (position == 0) {
@@ -45,20 +34,23 @@ public class ThreadViewAdapter extends PostListAdapter {
         } else {
             Util.textOrHide(txtSubject, post.getSubject().trim());
         }
+    }
 
-        // Load the poster name.
+    private void renderPosterName(View item, Post post) {
         TextView txtName = (TextView) item.findViewById(R.id.post_poster_name);
-        // TODO: Replace with name span.
-        txtName.setText(post.getPosterName());
+        String name = ChanHTML.rawText(post.getPosterName());
 
-        // Load the timestamp.
-        TextView txtTimestamp = (TextView) item.findViewById(R.id.post_date);
-        txtTimestamp.setText(post.getFormattedTime());
+        if (post.isModPost()) {
+            // Moderator poster names are in red.
+            SpanBuilder sb = new SpanBuilder();
+            sb.append(name, SpanBuilder.fg(255, 0, 0));
+            txtName.setText(sb.span());
+        } else {
+            txtName.setText(name);
+        }
+    }
 
-        // Load the post number.
-        TextView txtNumber = (TextView) item.findViewById(R.id.post_number);
-        txtNumber.setText("#" + Long.toString(post.getPostNumber()));
-
+    private void renderImage(View item, final Post post) {
         RelativeLayout imageLayout =
             (RelativeLayout) item.findViewById(R.id.post_image_layout);
 
@@ -80,8 +72,9 @@ public class ThreadViewAdapter extends PostListAdapter {
             // Hide layouts which do not have an image.
             imageLayout.setVisibility(View.GONE);
         }
+    }
 
-        // Load the comment.
+    private void renderComment(View item, final Post post) {
         TextView txtComment = (TextView) item.findViewById(R.id.post_comment);
 
         if (post.getComment().isEmpty()) {
@@ -94,7 +87,35 @@ public class ThreadViewAdapter extends PostListAdapter {
             txtComment.setMovementMethod(LinkMovementMethod.getInstance());
             new TextGenerator(txtComment, post.getComment()).styleText();
         }
+    }
 
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View item = convertView;
+
+        if (item == null) {
+            LayoutInflater inf = LayoutInflater.from(parent.getContext());
+
+            item = inf.inflate(R.layout.thread_post, parent, false);
+        }
+
+        final Post post = (Post) getItem(position);
+
+        renderSubject(position, item, post);
+        renderPosterName(item, post);
+
+        // Load the timestamp.
+        TextView txtTimestamp = (TextView) item.findViewById(R.id.post_date);
+        txtTimestamp.setText(post.getFormattedTime());
+
+        // Load the post number.
+        TextView txtNumber = (TextView) item.findViewById(R.id.post_number);
+        txtNumber.setText("#" + Long.toString(post.getPostNumber()));
+
+        renderImage(item, post);
+        renderComment(item, post);
+
+        // Defer the copy button click handling.
         View btnCopy = item.findViewById(R.id.post_copy_icon);
 
         btnCopy.setOnClickListener(new OnClickListener() {
