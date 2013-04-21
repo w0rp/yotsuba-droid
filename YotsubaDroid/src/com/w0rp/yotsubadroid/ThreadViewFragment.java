@@ -1,11 +1,15 @@
 package com.w0rp.yotsubadroid;
 
+import java.net.URI;
 import java.util.List;
 
 import com.w0rp.androidutils.Async;
 
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +30,28 @@ public class ThreadViewFragment extends Fragment {
         }
     }
 
+    private final ThreadViewAdapter threadAdapter;
     private String boardID;
     private long threadID = 0;
-    private ThreadViewAdapter threadAdapter;
     private BroadcastReceiver threadReceiver;
     private ThreadLoader threadLoader;
 
     public ThreadViewFragment() {
-        threadAdapter = new ThreadViewAdapter();
+        threadAdapter = new ThreadViewAdapter(
+         new ThreadViewAdapter.ImageClickHandler() {
+            @Override public void onClick(Post post) {
+                Context context = getActivity();
+                URI fileURL = post.getFileURL();
+
+                if (context == null || fileURL == null) {
+                    return;
+                }
+
+                // Open the image in some image URL handler.
+                context.startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(fileURL.toString())));
+            }
+        });
     }
 
     private void updateThread() {

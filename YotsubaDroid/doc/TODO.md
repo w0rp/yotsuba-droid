@@ -8,8 +8,6 @@ Essential Goals
 * Add refresh buttons to board, catalog, and thread Activities.
 * Make spoilers text sections clickable for revealing spoiler text.
 * Make post links clickable for links inside the thread. (Automated Scrolling)
-* Make post links clickable for links outside the thread. (startActivity)
-* Make post images clickable to view the image in full screen.
 
 Stretch Goals
 -------------
