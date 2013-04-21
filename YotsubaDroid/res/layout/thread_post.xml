@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="5dp" >
+    android:orientation="vertical" >
     
     <LinearLayout 
         android:id="@+id/post_header"
@@ -21,74 +20,79 @@
             android:textColor="#FFFFFF"
             android:layout_marginLeft="5dp" />
 
-        <RelativeLayout 
+        <LinearLayout 
             android:id="@+id/post_header_info_line"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <TextView 
-                android:id="@+id/post_poster_name"
-                android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+        >
+            
+            <RelativeLayout 
+                android:id="@+id/post_image_layout"
+                android:layout_width="0dp"
+                android:layout_height="90dp"
+                android:layout_weight="35"
+            >
+                <ImageView
+                    android:id="@+id/post_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="Post Image"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/filedeleted" />
+            </RelativeLayout>
+        
+            
+            <RelativeLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true" 
-                android:textSize="8pt"
-                android:textStyle="italic"
-                android:textColor="#FFFFFF"
-                android:layout_marginLeft="5dp" />
-
-            <TextView
-                android:id="@+id/post_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toLeftOf="@+id/post_number" 
-                android:textSize="6pt"
-                android:textColor="#FFFFFF" />
-
-            <TextView 
-                android:id="@+id/post_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true" 
-                android:textStyle="italic"
-                android:textSize="6pt"
-                android:textColor="#AACCFF"
-                android:layout_marginLeft="5dp" 
-                android:layout_marginRight="5dp" />
-        </RelativeLayout>
+                android:layout_weight="65"
+            >
+                    <TextView 
+                        android:id="@+id/post_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true" 
+                        android:textStyle="italic"
+                        android:textSize="6pt"
+                        android:textColor="#AACCFF"
+                        android:layout_marginRight="5dp" />
+        
+                    <TextView
+                        android:id="@+id/post_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true" 
+                        android:layout_toLeftOf="@id/post_number"
+                        android:textSize="6pt"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginRight="2dp" />
+                    
+                    <TextView 
+                        android:id="@+id/post_poster_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/post_number"
+                        android:gravity="right"
+                        android:textSize="8pt"
+                        android:textStyle="italic"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginRight="2dp" 
+                        android:includeFontPadding="false"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout 
-        android:id="@+id/post_content"
+    <TextView
+        android:id="@+id/post_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="5dp" >
-        
-        <RelativeLayout 
-            android:id="@+id/post_image_layout"
-            android:layout_width="200dp"
-            android:layout_height="150dp"
-        >
-            <ImageView
-                android:id="@+id/post_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:contentDescription="Post Image"
-                android:adjustViewBounds="true"
-                android:src="@drawable/filedeleted" />
-        </RelativeLayout>
-
-        <TextView
-            android:id="@+id/post_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10pt"
-            android:paddingLeft="5dp"
-            />
-    </LinearLayout>
+        android:textSize="8pt"
+        android:paddingLeft="5dp"
+    />
 </LinearLayout>

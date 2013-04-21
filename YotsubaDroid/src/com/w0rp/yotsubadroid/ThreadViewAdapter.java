@@ -54,17 +54,24 @@ public class ThreadViewAdapter extends PostListAdapter {
         if (post.getFile() != null) {
             // Show layouts which have an image.
             imageLayout.setVisibility(View.VISIBLE);
+            loadImage(post, imageView);
         } else {
             // Hide layouts which do not have an image.
             imageLayout.setVisibility(View.GONE);
         }
 
-        loadImage(post, imageView);
-
         // Load the comment.
         TextView txtComment = (TextView) item.findViewById(R.id.post_comment);
-        txtComment.setText(Comment.fullText(post.getComment()));
-        Linkify.addLinks(txtComment, Linkify.WEB_URLS);
+
+        if (post.getComment().isEmpty()) {
+            // Hide text fields when there's no comment.
+            txtComment.setVisibility(View.GONE);
+        } else {
+            // Fill the fields with formatted text otherwise.
+            txtComment.setVisibility(View.VISIBLE);
+            txtComment.setText(Comment.fullText(post.getComment()));
+            Linkify.addLinks(txtComment, Linkify.WEB_URLS);
+        }
 
         return item;
     }

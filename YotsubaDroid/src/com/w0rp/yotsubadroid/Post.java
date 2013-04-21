@@ -11,6 +11,9 @@ import android.annotation.SuppressLint;
 import android.net.Uri;
 
 public class Post {
+    private static final DateFormat dateFormat =
+        DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+
     private String boardID = "";
     private ChanFile file = null;
     private long time = 0;
@@ -311,6 +314,6 @@ public class Post {
      */
     public String getFormattedTime() {
         // Date expects milliseconds, not seconds.
-        return DateFormat.getDateTimeInstance().format(new Date(time * 1000));
+        return dateFormat.format(new Date(time * 1000));
     }
 }
