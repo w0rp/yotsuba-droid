@@ -76,7 +76,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:contentDescription="Post Image"
+                android:contentDescription="@string/post_image_description"
                 android:adjustViewBounds="true"
                 android:src="@drawable/filedeleted" />
         </RelativeLayout>
@@ -87,6 +87,7 @@
             android:layout_height="wrap_content"
             android:textSize="10pt"
             android:paddingLeft="5dp"
-            />
+            android:textIsSelectable="true"
+        />
     </LinearLayout>
 </LinearLayout>
