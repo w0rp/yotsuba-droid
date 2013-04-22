@@ -2,7 +2,6 @@ package com.w0rp.yotsubadroid;
 
 import com.w0rp.androidutils.Util;
 
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,19 +45,12 @@ public class BoardCatalogAdapter extends PostListAdapter {
         TextView txtSubject = (TextView) item
             .findViewById(R.id.catalog_item_subject);
 
-        Util.textOrHide(txtSubject, post.getSubject().trim());
+        Util.textOrHide(txtSubject, ChanHTML.rawText(post.getSubject()).trim());
 
         TextView txtComment = (TextView) item
             .findViewById(R.id.catalog_item_comment);
 
-        Spanned postText = ChanHTML.summaryText(post.getComment());
-
-        if (postText.length() == 0) {
-            txtComment.setVisibility(View.GONE);
-        } else {
-            txtComment.setVisibility(View.VISIBLE);
-            txtComment.setText(postText);
-        }
+        Util.textOrHide(txtComment, ChanHTML.rawText(post.getComment()).trim());
 
         ImageView imageView = (ImageView) item
             .findViewById(R.id.catalog_item_image);

@@ -66,7 +66,7 @@ public class ThreadViewFragment extends Fragment {
         public void onReceivePostList(List<Post> postList) {
             if (postList.size() > 0) {
                 // Use the thread's subject for the action bar title.
-                String subject = postList.get(0).getSubject();
+                String subject = ChanHTML.rawText(postList.get(0).getSubject());
                 getActivity().getActionBar().setTitle(subject);
             }
 

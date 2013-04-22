@@ -32,7 +32,8 @@ public class ThreadViewAdapter extends PostListAdapter {
             // Always hide the first subject.
             txtSubject.setVisibility(View.GONE);
         } else {
-            Util.textOrHide(txtSubject, post.getSubject().trim());
+            Util.textOrHide(txtSubject,
+                ChanHTML.rawText(post.getSubject()).trim());
         }
     }
 

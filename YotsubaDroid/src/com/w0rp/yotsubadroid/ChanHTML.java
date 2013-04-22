@@ -246,17 +246,17 @@ public class ChanHTML {
         }
     }
 
-    private static String xmlify(String comment) {
+    private static String xmlify(String html) {
         // TODO: Use smart Regex here.
         // The span replace here is here to fix some broken 4chan API
         // name field nonsense.
         return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<root>"
-            + comment.replace("<br>", "<br />").replace("<wbr>", "")
+            + html.replace("<br>", "<br />").replace("<wbr>", "")
             .replace("</span> <span class=\"commentpostername\">", " ")
             + "</root>";
     }
 
-    private static List<Content> parse(String comment) {
+    private static List<Content> parse(String html) {
         TagHandler handler = new TagHandler();
 
         try {
@@ -267,7 +267,7 @@ public class ChanHTML {
             reader.setContentHandler(handler);
 
             // Pass in the XML to parse.
-            reader.parse(new InputSource(new StringReader(xmlify(comment))));
+            reader.parse(new InputSource(new StringReader(xmlify(html))));
         } catch (Exception e) {
             SLog.e(e);
         }
@@ -275,32 +275,15 @@ public class ChanHTML {
         return handler.contentList;
     }
 
-    public static Spanned summaryText(String comment) {
-        SpanBuilder sb = new SpanBuilder();
-
-        for (Content content : parse(comment)) {
-            String text = content.getText().replace("\n", " ");
-
-            switch (content.getType()) {
-            case PLAIN:
-                sb.append(text);
-            break;
-            case QUOTE:
-                sb.append(text, SpanBuilder.fg(QUOTE_COLOR));
-            break;
-            default:
-            // The rest don't matter for summaries.
-            break;
-            }
-        }
-
-        return sb.span();
-    }
-
-    public static String rawText(String comment) {
+    public static String rawText(String html) {
         StringBuilder sb = new StringBuilder();
 
-        for (Content content : parse(comment)) {
+        for (Content content : parse(html)) {
+            if (content.getType() == ContentType.SPOILER) {
+                // Skip spoilers in raw text.
+                continue;
+            }
+
             sb.append(content.getText());
         }
 
