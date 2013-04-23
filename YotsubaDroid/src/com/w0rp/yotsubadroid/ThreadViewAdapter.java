@@ -2,6 +2,7 @@ package com.w0rp.yotsubadroid;
 
 import com.w0rp.androidutils.SpanBuilder;
 import com.w0rp.androidutils.Util;
+import com.w0rp.yotsubadroid.ChanHTML.QuotelinkClickHandler;
 import com.w0rp.yotsubadroid.ChanHTML.TextGenerator;
 
 import android.text.method.LinkMovementMethod;
@@ -14,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ThreadViewAdapter extends PostListAdapter {
-    public static interface ThreadInteractor {
+    public static interface ThreadInteractor extends QuotelinkClickHandler {
         public void onImageClick(Post post);
         public void onTextCopy(Post post);
     }
@@ -86,7 +87,13 @@ public class ThreadViewAdapter extends PostListAdapter {
             txtComment.setVisibility(View.VISIBLE);
             // We need to set this so ClickableSpans will work.
             txtComment.setMovementMethod(LinkMovementMethod.getInstance());
-            new TextGenerator(txtComment, post.getComment()).styleText();
+
+            TextGenerator textGen = new TextGenerator(txtComment,
+                post.getComment());
+
+            textGen.setQuotelinkClickHandler(interactor);
+
+            textGen.styleText();
         }
     }
 

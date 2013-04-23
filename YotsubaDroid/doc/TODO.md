@@ -7,9 +7,7 @@ Essential Goals
 * Use If-Modified-Since logic for all JSON requests.
 * Add refresh buttons to board, catalog, and thread Activities.
 * Make post links clickable for links inside the thread. (Automated Scrolling)
-* Parse name HTML.
-    * & escapes.
-    * Colour moderator names.
+* Image filename and size. (Like catalog image text)
 
 Post-release Goals
 -------------------
