@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.SAXParser;
@@ -119,31 +120,25 @@ public class ChanHTML {
 
                     currentData = new HashMap<String, Object>();
 
-                    List<String> matchList;
                     String href = atts.getValue("href");
 
-                    if (href == null) {
-                        return;
+                    List<String> boardMatches
+                        = RE.search("^/([a-zA-Z0-9_]+)", href);
+
+                    if (!boardMatches.isEmpty()) {
+                        currentData.put("boardID",
+                            boardMatches.get(1).toLowerCase(Locale.ENGLISH));
                     }
 
-                    matchList = RE.search("^(\\d+)#[a-zA-z]?(\\d+)", href);
+                    List<String> postMatches
+                        = RE.search("(\\d+)#[a-zA-z]?(\\d+)$", href);
 
-                    if (!matchList.isEmpty()) {
+                    if (!postMatches.isEmpty()) {
                         currentData.put("threadID",
-                            Long.parseLong(matchList.get(1)));
+                            Long.parseLong(postMatches.get(1)));
                         currentData.put("postID",
-                            Long.parseLong(matchList.get(2)));
-                        return;
+                            Long.parseLong(postMatches.get(2)));
                     }
-
-                    matchList = RE.search("^/([a-zA-Z0-9_]+)", href);
-
-                    if (!matchList.isEmpty()) {
-                        currentData.put("board", matchList.get(1));
-                        return;
-                    }
-
-                    // TODO: Handle board thread link format.
                 }
             } else {
                 state = ContentType.UNKNOWN;
@@ -166,7 +161,7 @@ public class ChanHTML {
     }
 
     public interface QuotelinkClickHandler {
-        public void onQuotelinkClick(String board, long threadID,
+        public void onQuotelinkClick(String boardID, long threadID,
             long postID);
     }
 
@@ -218,7 +213,7 @@ public class ChanHTML {
                     Long threadID = (Long) data.get("threadID");
                     Long postID = (Long) data.get("postID");
 
-                    quoteHandler.onQuotelinkClick((String) data.get("board"),
+                    quoteHandler.onQuotelinkClick((String) data.get("boardID"),
                         threadID != null ? threadID : 0,
                         postID != null ? postID : 0);
                 }

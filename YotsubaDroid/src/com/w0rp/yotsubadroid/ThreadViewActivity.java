@@ -16,11 +16,12 @@ public class ThreadViewActivity extends Activity {
         // Load the board from the intent data.
         String boardID = intent.getStringExtra("boardID");
         long threadID = intent.getLongExtra("threadID", 0);
+        long postID = intent.getLongExtra("postID", threadID);
 
         ThreadViewFragment frag = (ThreadViewFragment) getFragmentManager()
             .findFragmentById(R.id.thread_view_fragment);
 
-        frag.setData(boardID, threadID);
+        frag.setData(boardID, threadID, postID);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.w0rp.androidutils;
 
+import android.annotation.SuppressLint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,17 +9,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.util.SparseArray;
-
 /**
  * This module provides a wrapper around Java's regular expression
  * functionality. Strings can be used directly as regular expressions. All
  * strings used as regular expression in this module will have their compiled
  * forms cached. So there is no need to pre-compile regular expressions.
  */
+@SuppressLint("UseSparseArrays")
 public abstract class RE {
-    private static SparseArray<Map<String, Pattern>> reCache =
-        new SparseArray<Map<String, Pattern>>();
+    private static Map<Integer, Map<String, Pattern>> reCache =
+        new HashMap<Integer, Map<String, Pattern>>();
 
     /**
      * Compile a regular expression pattern, caching the result.

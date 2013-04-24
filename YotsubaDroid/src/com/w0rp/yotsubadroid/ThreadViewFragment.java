@@ -1,10 +1,12 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.w0rp.androidutils.Async;
-import com.w0rp.androidutils.SLog;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
 
 import android.app.Fragment;
@@ -32,17 +34,34 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
                 getActivity().getActionBar().setTitle(subject);
             }
 
-            // TODO: Save a mapping from post ID to index.
+            postPosMap = new HashMap<Long, Integer>();
+
+            // Save the posts positions for later.
+            for (int i = 0; i < postList.size(); ++i) {
+                postPosMap.put(postList.get(i).getPostNumber(), i);
+            }
 
             threadAdapter.setPostList(postList);
+
+            if (!initiallySkipped) {
+                initiallySkipped = true;
+
+                if (threadID != postID) {
+                    skipToPost(postID);
+                }
+            }
         }
     }
 
     private final ThreadViewAdapter threadAdapter;
     private String boardID;
     private long threadID = 0;
+    private long postID = 0;
+    private boolean initiallySkipped = false;
+    private Map<Long, Integer> postPosMap = Collections.emptyMap();
     private BroadcastReceiver threadReceiver;
     private ThreadLoader threadLoader;
+    private ListView postListView;
 
     public ThreadViewFragment() {
         threadAdapter = new ThreadViewAdapter(this);
@@ -58,9 +77,30 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         threadLoader.execute();
     }
 
-    public void setData(String boardID, long threadID) {
+    private void openThread(String boardID, long threadID, long postID) {
+        Intent intent = new Intent(getActivity(), ThreadViewActivity.class);
+
+        intent.putExtra("boardID", boardID);
+        intent.putExtra("threadID", threadID);
+        intent.putExtra("postID", postID);
+
+        getActivity().startActivity(intent);
+    }
+
+    private void skipToPost(long postID) {
+        Integer pos = postPosMap.get(postID);
+
+        if (pos == null) {
+            return;
+        }
+
+        postListView.smoothScrollToPosition(pos);
+    }
+
+    public void setData(String boardID, long threadID, long postID) {
         this.boardID = boardID;
         this.threadID = threadID;
+        this.postID = postID;
 
         // TODO: Use last modified logic in PostLoader.
         updateThread();
@@ -72,13 +112,11 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         threadReceiver = new ThreadReceiver();
         Async.registerClass(getActivity(), threadReceiver);
 
-        // TODO: Save a reference to this ListView so we can skip through it.
-
-        ListView listView = (ListView) inflater.inflate(
+        postListView = (ListView) inflater.inflate(
             R.layout.thread_post_list, container);
-        listView.setAdapter(threadAdapter);
+        postListView.setAdapter(threadAdapter);
 
-        return listView;
+        return postListView;
     }
 
     @Override
@@ -126,8 +164,23 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     }
 
     @Override
-    public void onQuotelinkClick(String board, long threadID, long postID) {
-        // TODO: Skip to item in list by checking the saved map.
-        SLog.i(board, threadID, postID);
+    public void onQuotelinkClick(String boardID, long threadID, long postID) {
+        if (threadID == 0 || postID == 0) {
+            return;
+        }
+
+        if ((boardID == null || this.boardID.equals(boardID))
+        && threadID == this.threadID) {
+            // The post is in this thread.
+            skipToPost(postID);
+            return;
+        }
+
+        if (boardID == null) {
+            boardID = this.boardID;
+        }
+
+        // The post is not in this thread, so open the thread.
+        openThread(boardID, threadID, postID);
     }
 }
