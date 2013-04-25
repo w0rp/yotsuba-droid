@@ -25,7 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class MainActivity extends Activity implements OnItemClickListener {
+public class BoardActivity extends Activity implements OnItemClickListener {
     private class BoardDownloadTask extends SingleHTTPRequestTask {
         @Override
         protected void onPostExecute(String result) {
@@ -124,7 +124,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_settings: {
-            Intent intent = new Intent(this, YotPreferenceActivity.class);
+            Intent intent = new Intent(this, BoardPreferenceActivity.class);
             startActivity(intent);
             return true;
         }

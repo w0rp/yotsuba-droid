@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <ListPreference
+        android:key="pref_thread_back"
+        android:entries="@array/pref_thread_back_labels"
+        android:entryValues="@array/pref_thread_back_values"
+        android:title="Thread back button behaviour"
+        android:summary="Control back behaviour when following quote links"
+        android:defaultValue="ALWAYS"
+    />
+
+</PreferenceScreen>

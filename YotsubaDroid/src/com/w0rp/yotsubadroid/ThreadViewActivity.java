@@ -1,11 +1,16 @@
 package com.w0rp.yotsubadroid;
 
+import com.w0rp.yotsubadroid.Yot.TBACK;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
+import android.view.MenuItem;
 
 public class ThreadViewActivity extends Activity {
+    ThreadViewFragment threadFrag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,10 +23,10 @@ public class ThreadViewActivity extends Activity {
         long threadID = intent.getLongExtra("threadID", 0);
         long postID = intent.getLongExtra("postID", threadID);
 
-        ThreadViewFragment frag = (ThreadViewFragment) getFragmentManager()
+        threadFrag = (ThreadViewFragment) getFragmentManager()
             .findFragmentById(R.id.thread_view_fragment);
 
-        frag.setData(boardID, threadID, postID);
+        threadFrag.setData(boardID, threadID, postID);
     }
 
     @Override
@@ -31,4 +36,23 @@ public class ThreadViewActivity extends Activity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_settings: {
+            Intent intent = new Intent(this, ThreadPreferenceActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        default:
+            return false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Yot.backHistorySetting() == TBACK.NEVER || !threadFrag.skipBack()) {
+            super.onBackPressed();
+        }
+    }
 }

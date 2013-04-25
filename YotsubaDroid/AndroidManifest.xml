@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.w0rp.yotsubadroid.MainActivity"
+            android:name="com.w0rp.yotsubadroid.BoardActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,8 +28,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.w0rp.yotsubadroid.YotPreferenceActivity"
-            android:label="@string/app_name" >
+            android:name="com.w0rp.yotsubadroid.BoardPreferenceActivity"
+            android:label="@string/board_settings_title" >
         </activity>
         <activity
             android:name="com.w0rp.yotsubadroid.BoardCatalogActivity"
@@ -38,6 +38,10 @@
         <activity
             android:name="com.w0rp.yotsubadroid.ThreadViewActivity"
             android:label="@string/title_activity_thread_view" >
+        </activity>
+        <activity
+            android:name="com.w0rp.yotsubadroid.ThreadPreferenceActivity"
+            android:label="@string/thread_settings_title" >
         </activity>
     </application>
 

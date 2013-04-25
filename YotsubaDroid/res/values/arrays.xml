@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_thread_back_labels">
+        <item>Always remember position</item>
+        <item>Remember position when scrolling off screen</item>
+        <item>Never remember position</item>
+    </string-array>
+    <string-array name="pref_thread_back_values">
+        <item>ALWAYS</item>
+        <item>SOMETIMES</item>
+        <item>NEVER</item>
+    </string-array>
+</resources>

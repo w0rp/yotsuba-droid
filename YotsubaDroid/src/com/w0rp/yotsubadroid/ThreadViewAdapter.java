@@ -88,8 +88,7 @@ public class ThreadViewAdapter extends PostListAdapter {
             // We need to set this so ClickableSpans will work.
             txtComment.setMovementMethod(LinkMovementMethod.getInstance());
 
-            TextGenerator textGen = new TextGenerator(txtComment,
-                post.getComment());
+            TextGenerator textGen = new TextGenerator(txtComment, post);
 
             textGen.setQuotelinkClickHandler(interactor);
 

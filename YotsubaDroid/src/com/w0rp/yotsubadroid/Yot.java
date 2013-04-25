@@ -30,6 +30,12 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 
 public class Yot extends Application {
+    public static enum TBACK {
+        ALWAYS,
+        SOMETIMES,
+        NEVER
+    }
+
     public static final String API_URL = "https://api.4chan.org/";
 
     private static Context context;
@@ -98,6 +104,15 @@ public class Yot extends Application {
 
     public static boolean nsfwEnabled() {
         return prefs.getBoolean("pref_nsfw", false);
+    }
+
+    public static TBACK backHistorySetting() {
+        try {
+            return Enum.valueOf(TBACK.class,
+                prefs.getString("pref_thread_back", "ALWAYS"));
+        } catch (Exception e) {
+            return TBACK.ALWAYS;
+        }
     }
 
     public static Board cachedBoard(String boardID) {

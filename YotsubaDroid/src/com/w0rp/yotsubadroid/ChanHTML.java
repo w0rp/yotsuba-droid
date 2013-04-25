@@ -161,7 +161,7 @@ public class ChanHTML {
     }
 
     public interface QuotelinkClickHandler {
-        public void onQuotelinkClick(String boardID, long threadID,
+        public void onQuotelinkClick(Post post, String boardID, long threadID,
             long postID);
     }
 
@@ -213,7 +213,8 @@ public class ChanHTML {
                     Long threadID = (Long) data.get("threadID");
                     Long postID = (Long) data.get("postID");
 
-                    quoteHandler.onQuotelinkClick((String) data.get("boardID"),
+                    quoteHandler.onQuotelinkClick(post,
+                        (String) data.get("boardID"),
                         threadID != null ? threadID : 0,
                         postID != null ? postID : 0);
                 }
@@ -229,16 +230,18 @@ public class ChanHTML {
 
         private final Set<Integer> spoilerRevealSet = new HashSet<Integer>();
         private final TextView textView;
+        private final Post post;
         private final List<Content> contentList;
         private QuotelinkClickHandler quoteHandler;
 
-        public TextGenerator(TextView textView, String text) {
+        public TextGenerator(TextView textView, Post post) {
             assert(textView != null);
-            assert(text != null);
+            assert(post != null);
 
             this.textView = textView;
+            this.post = post;
             // We can parse everything up front, so we do it all once.
-            this.contentList = parse(text);
+            this.contentList = parse(post.getComment());
         }
 
         public void setQuotelinkClickHandler(QuotelinkClickHandler handler) {

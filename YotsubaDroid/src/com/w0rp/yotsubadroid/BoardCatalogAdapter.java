@@ -42,6 +42,12 @@ public class BoardCatalogAdapter extends PostListAdapter {
             }
         });
 
+        ImageView imageView = (ImageView) item
+            .findViewById(R.id.catalog_item_image);
+
+        // null the image right away so we can hide it quickly.
+        imageView.setImageDrawable(null);
+
         TextView txtSubject = (TextView) item
             .findViewById(R.id.catalog_item_subject);
 
@@ -51,9 +57,6 @@ public class BoardCatalogAdapter extends PostListAdapter {
             .findViewById(R.id.catalog_item_comment);
 
         Util.textOrHide(txtComment, ChanHTML.rawText(post.getComment()).trim());
-
-        ImageView imageView = (ImageView) item
-            .findViewById(R.id.catalog_item_image);
 
         loadImage(post, imageView);
 

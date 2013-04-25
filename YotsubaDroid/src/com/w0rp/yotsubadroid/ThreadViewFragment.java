@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import com.w0rp.androidutils.Async;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
+import com.w0rp.yotsubadroid.Yot.TBACK;
 
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
@@ -59,6 +61,7 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     private long postID = 0;
     private boolean initiallySkipped = false;
     private Map<Long, Integer> postPosMap = Collections.emptyMap();
+    private Stack<Long> postHistory = new Stack<Long>();
     private BroadcastReceiver threadReceiver;
     private ThreadLoader threadLoader;
     private ListView postListView;
@@ -87,6 +90,44 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         getActivity().startActivity(intent);
     }
 
+    /**
+     * Save the position for a post for the back button history.
+     *
+     * Nothing will be done if the new post is already visible.
+     *
+     * @param postID The post we are moving from.
+     * @param newPostID The post we are moving to.
+     */
+    private void savePosition(long postID, long newPostID) {
+        TBACK hist = Yot.backHistorySetting();
+
+        if (hist == TBACK.NEVER) {
+            return;
+        }
+
+        Integer pos = postPosMap.get(newPostID);
+
+        if (pos == null) {
+            return;
+        }
+
+        if (hist == TBACK.SOMETIMES
+        && pos >= postListView.getFirstVisiblePosition()
+        && pos <= postListView.getLastVisiblePosition()) {
+            // The position we're moving to is already visible.
+            // Let's not save the something for the back button history.
+            return;
+        }
+
+        if (!postHistory.empty() && postHistory.lastElement() == postID) {
+            // Don't save history for the same thing more than one time
+            // in a row.
+            return;
+        }
+
+        postHistory.add(postID);
+    }
+
     private void skipToPost(long postID) {
         Integer pos = postPosMap.get(postID);
 
@@ -94,7 +135,17 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
             return;
         }
 
-        postListView.smoothScrollToPosition(pos);
+        postListView.setSelection(pos);
+        //postListView.smoothScrollToPosition(pos);
+    }
+
+    public boolean skipBack() {
+        if (postHistory.empty()) {
+            return false;
+        }
+
+        skipToPost(postHistory.pop());
+        return true;
     }
 
     public void setData(String boardID, long threadID, long postID) {
@@ -164,7 +215,8 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     }
 
     @Override
-    public void onQuotelinkClick(String boardID, long threadID, long postID) {
+    public void onQuotelinkClick(Post originatingPost, String boardID,
+    long threadID, long postID) {
         if (threadID == 0 || postID == 0) {
             return;
         }
@@ -172,6 +224,7 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         if ((boardID == null || this.boardID.equals(boardID))
         && threadID == this.threadID) {
             // The post is in this thread.
+            savePosition(originatingPost.getPostNumber(), postID);
             skipToPost(postID);
             return;
         }
