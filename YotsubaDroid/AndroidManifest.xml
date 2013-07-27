@@ -20,7 +20,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.w0rp.yotsubadroid.BoardActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,11 +34,13 @@
         </activity>
         <activity
             android:name="com.w0rp.yotsubadroid.BoardCatalogActivity"
-            android:label="@string/title_activity_board_catalog" >
+            android:label="@string/title_activity_board_catalog" 
+            android:configChanges="orientation|screenSize" >
         </activity>
         <activity
             android:name="com.w0rp.yotsubadroid.ThreadViewActivity"
-            android:label="@string/title_activity_thread_view" >
+            android:label="@string/title_activity_thread_view" 
+            android:configChanges="orientation|screenSize" >
         </activity>
         <activity
             android:name="com.w0rp.yotsubadroid.ThreadPreferenceActivity"
