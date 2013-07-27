@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,9 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
             if (Coerce.empty(result)) {
                 // TODO: Notify of failure here somehow.
+
+                setProgressBarIndeterminateVisibility(false);
+
                 return;
             }
 
@@ -53,6 +57,7 @@ public class BoardActivity extends Activity implements OnItemClickListener {
     private class BoardListReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            setProgressBarIndeterminateVisibility(false);
             populateBoardList();
         }
     }
@@ -77,6 +82,9 @@ public class BoardActivity extends Activity implements OnItemClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         setContentView(R.layout.activity_main);
 
         boardListReceiver = new BoardListReceiver();
@@ -87,6 +95,8 @@ public class BoardActivity extends Activity implements OnItemClickListener {
         boardAdapter = new ArrayAdapter<String>(this,
             android.R.layout.simple_expandable_list_item_1);
         boardListView.setAdapter(boardAdapter);
+
+        setProgressBarIndeterminateVisibility(true);
 
         new BoardDownloadTask().execute(Net.prepareGet(URI.create(Yot.API_URL
             + "boards.json")));

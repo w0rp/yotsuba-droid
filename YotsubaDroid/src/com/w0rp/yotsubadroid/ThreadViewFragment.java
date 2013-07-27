@@ -52,6 +52,8 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
                     skipToPost(postID);
                 }
             }
+
+            getActivity().setProgressBarIndeterminateVisibility(false);
         }
     }
 
@@ -74,6 +76,8 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         if (threadLoader != null) {
             threadLoader.cancel(true);
         }
+
+        getActivity().setProgressBarIndeterminateVisibility(true);
 
         // TODO: Reuse instance here to ease implementation of last modified?
         threadLoader = new ThreadLoader(getActivity(), boardID, threadID);

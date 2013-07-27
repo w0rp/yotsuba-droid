@@ -4,11 +4,12 @@ TODO
 Essential Goals
 ---------------
 
-* Use If-Modified-Since logic for all JSON requests.
 * Add refresh buttons to board, catalog, and thread Activities.
+* Use If-Modified-Since logic for all JSON requests.
 * Image filename and size. (Like catalog image text)
 * Moving from one thread to another one replaces the data set for the previous
   activity instance.
+* Fix loading /vg/.
 
 Post-release Goals
 -------------------

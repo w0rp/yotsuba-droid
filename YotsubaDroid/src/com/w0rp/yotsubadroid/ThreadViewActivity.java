@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 public class ThreadViewActivity extends Activity {
     ThreadViewFragment threadFrag;
@@ -14,6 +15,9 @@ public class ThreadViewActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         setContentView(R.layout.activity_thread_view);
 
         Intent intent = getIntent();

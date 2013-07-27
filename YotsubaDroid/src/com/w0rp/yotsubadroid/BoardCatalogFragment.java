@@ -21,6 +21,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     public class CatalogReceiver extends PostListReceiver {
         @Override
         public void onReceivePostList(List<Post> postList) {
+            getActivity().setProgressBarIndeterminateVisibility(false);
             catalogAdapter.setPostList(postList);
         }
     }
@@ -39,6 +40,8 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         if (catalogLoader != null) {
             catalogLoader.cancel(true);
         }
+
+        getActivity().setProgressBarIndeterminateVisibility(true);
 
         catalogLoader = new CatalogLoader(getActivity(), boardID);
         catalogLoader.execute();
