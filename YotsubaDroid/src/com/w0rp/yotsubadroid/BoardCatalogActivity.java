@@ -3,6 +3,7 @@ package com.w0rp.yotsubadroid;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 
 public class BoardCatalogActivity extends Activity {
@@ -19,9 +20,12 @@ public class BoardCatalogActivity extends Activity {
 
         getActionBar().setTitle(board.getTitle());
 
-        BoardCatalogFragment frag = (BoardCatalogFragment) getFragmentManager()
+        findCatalogFragment().setBoardID(board.getID());
+    }
+
+    private BoardCatalogFragment findCatalogFragment() {
+        return (BoardCatalogFragment) getFragmentManager()
             .findFragmentById(R.id.board_catalog_fragment);
-        frag.setBoardID(board.getID());
     }
 
     @Override
@@ -36,4 +40,15 @@ public class BoardCatalogActivity extends Activity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_refresh:
+            findCatalogFragment().updateCatalog();
+
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
+    }
 }

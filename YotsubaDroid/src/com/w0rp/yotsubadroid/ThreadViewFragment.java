@@ -72,7 +72,7 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         threadAdapter = new ThreadViewAdapter(this);
     }
 
-    private void updateThread() {
+    public void updateThread() {
         if (threadLoader != null) {
             threadLoader.cancel(true);
         }

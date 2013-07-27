@@ -36,7 +36,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         catalogAdapter.setOnThreadSelectedListener(this);
     }
 
-    private void updateCatalog() {
+    public void updateCatalog() {
         if (catalogLoader != null) {
             catalogLoader.cancel(true);
         }

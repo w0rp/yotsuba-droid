@@ -48,8 +48,12 @@ public class ThreadViewActivity extends Activity {
             startActivity(intent);
             return true;
         }
+        case R.id.menu_refresh:
+            threadFrag.updateThread();
+
+            return true;
         default:
-            return false;
+            return super.onOptionsItemSelected(item);
         }
     }
 
