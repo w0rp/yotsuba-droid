@@ -36,34 +36,6 @@ public abstract class JSON {
     }
 
     /**
-     * Use this method for when you reasonably expect parsing to succeed.
-     *
-     * @param jsonString A JSON string to load.
-     * @return A valid JSONObject, empty if parsing failed.
-     */
-    public static JSONObject obj(String jsonString) {
-        try {
-            return new JSONObject(jsonString);
-        } catch (Exception e) {
-            return new JSONObject();
-        }
-    }
-
-    /**
-     * Use this method for when you reasonably expect parsing to succeed.
-     *
-     * @param jsonString A JSON string to load.
-     * @return A valid JSONArray, empty if parsing failed.
-     */
-    public static JSONArray arr(String jsonString) {
-        try {
-            return new JSONArray(jsonString);
-        } catch (Exception e) {
-            return new JSONArray();
-        }
-    }
-
-    /**
      * @param arr A JSONArray. null will be tolerated.
      * @return An Iterator through the values of the JSONArray.
      */

@@ -3,6 +3,7 @@ package com.w0rp.yotsubadroid;
 import java.net.URI;
 import java.util.List;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.w0rp.androidutils.Async;
@@ -40,8 +41,16 @@ public class BoardActivity extends Activity implements OnItemClickListener {
                 return;
             }
 
-            for (JSONObject boardObj : JSON.objIter(
-            JSON.obj(result), "boards")) {
+            JSONObject boardJSON = null;
+
+            try {
+                boardJSON = new JSONObject(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            for (JSONObject boardObj : JSON.objIter(boardJSON, "boards")) {
                 Board board = Yot.cachedBoard(boardObj.optString("board"));
 
                 board.setTitle(boardObj.optString("title"));
