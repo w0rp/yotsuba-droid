@@ -1,142 +1,86 @@
 package com.w0rp.androidutils;
 
-import android.annotation.SuppressLint;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.AbstractList;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * This module provides a wrapper around Java's regular expression
- * functionality. Strings can be used directly as regular expressions. All
- * strings used as regular expression in this module will have their compiled
- * forms cached. So there is no need to pre-compile regular expressions.
- */
-@SuppressLint("UseSparseArrays")
-public abstract class RE {
-    private static Map<Integer, Map<String, Pattern>> reCache =
-        new HashMap<Integer, Map<String, Pattern>>();
-
+public final class RE {
     /**
-     * Compile a regular expression pattern, caching the result.
-     *
-     * @param regex The regular expression to compile.
-     * @param flags The flags to set.
-     * @return The compiled, cached regular expression pattern.
+     * A List wrapper for a MatchList.
      */
-    private static Pattern compile(String regex, int flags) {
-        Map<String, Pattern> patMap = reCache.get(flags);
+    public static class MatchList extends AbstractList<String> {
+        private final MatchResult matchResult;
 
-        if (patMap == null) {
-           patMap = new HashMap<String, Pattern>();
-           reCache.put(flags, patMap);
+        private MatchList() {
+            this.matchResult = null;
         }
 
-        Pattern pattern = patMap.get(regex);
-
-        if (pattern == null) {
-            pattern = Pattern.compile(regex, flags);
-            patMap.put(regex, pattern);
+        /**
+         * Create a MatchList given a match result.
+         *
+         * If the result is null, the match list will be empty.
+         *
+         * @param matchResult The match result.
+         */
+        public MatchList(MatchResult matchResult) {
+            this.matchResult = matchResult;
         }
 
-        return pattern;
+        /**
+         * @return The MatchResult object backing this List, which may be null.
+         */
+        public MatchResult getMatchResult() {
+            return matchResult;
+        }
+
+        /**
+         * Get an element of the match result, index 0 returning the whole match
+         * and further indices returning a match group.
+         *
+         * @return The group at the given location.
+         */
+        @Override
+        public String get(int location) {
+            return matchResult.group(location);
+        }
+
+        /**
+         * @return The number of groups in the match, plus the whole match.
+         */
+        @Override
+        public int size() {
+            if (matchResult == null) {
+                return 0;
+            }
+
+            return matchResult.groupCount() + 1;
+        }
     }
 
     /**
-     * Search for a single match of a regular expression pattern.
-     * Return the result in an immutable list.
-     *
-     * @param regex A regular expression pattern to match with.
-     * @param input The input to match, which may be null.
-     *
-     * @return A list containing capture groups, empty is the match fails.
+     * A shared immutable instance of an empty match list.
      */
-    public static List<String> search(Pattern regex, CharSequence input) {
-        if (input == null) {
-            return Collections.emptyList();
-        }
+    public static final MatchList emptyMatch = new MatchList();
 
-        Matcher matcher = regex.matcher(input);
+    /**
+     * Search for a single regular expression match in some input.
+     *
+     * @param pattern A regular expression pattern
+     * @param input Some character input.
+     * @return The match results as a MatchList, empty if no match is made.
+     * @throws AssertionException If the pattern or input is null.
+     */
+    public static MatchList search(Pattern pattern, CharSequence input) {
+        assert pattern != null : "null pattern given to RE.search!";
+        assert input != null : "null input given to RE.search!";
+
+        Matcher matcher = pattern.matcher(input);
 
         if (!matcher.find()) {
-            return Collections.emptyList();
+            return emptyMatch;
         }
 
-        final int len = matcher.groupCount() + 1;
-
-        List<String> matchList = new ArrayList<String>(len);
-
-        for (int i = 0; i < len; ++i) {
-            matchList.add(matcher.group(i));
-        }
-
-        return Collections.unmodifiableList(matchList);
-    }
-
-    /**
-     * Search for a single match of a regular expression pattern.
-     * Return the result in an immutable list.
-     *
-     * @param regex A regular expression pattern to match with.
-     * @param input The input to match, which may be null.
-     *
-     * @return A list containing capture groups, empty is the match fails.
-     */
-    public static List<String> search(String regex, CharSequence input) {
-        return search(compile(regex, 0), input);
-    }
-
-    /**
-     * Search for a single match of a regular expression pattern.
-     * Return the result in an immutable list.
-     *
-     * @param regex A regular expression pattern to match with.
-     * @param input The input to match, which may be null.
-     * @param flags Flags to set when compiling the pattern.
-     *
-     * @return A list containing capture groups, empty is the match fails.
-     */
-    public static List<String> search(String regex, CharSequence input,
-    int flags) {
-        return search(compile(regex, flags), input);
-    }
-
-    /**
-     * @param regex A regular expression pattern to match with.
-     * @param input The input to match, which may be null.
-     *
-     * @return true if the input contains a match.
-     */
-    public static boolean contains(Pattern regex, CharSequence input) {
-        if (input == null) {
-            return false;
-        }
-
-        return regex.matcher(input).find();
-    }
-
-    /**
-     * @param regex A regular expression pattern to match with.
-     * @param input The input to match, which may be null.
-     *
-     * @return true if the input contains a match.
-     */
-    public static boolean contains(String regex, CharSequence input) {
-        return contains(compile(regex, 0), input);
-    }
-
-    /**
-     * @param regex A regular expression pattern to match with.
-     * @param input The input to match, which may be null.
-     * @param flags Flags to set when compiling the pattern.
-     *
-     * @return true if the input contains a match.
-     */
-    public static boolean contains(String regex, CharSequence input,
-    int flags) {
-        return contains(compile(regex, flags), input);
+        return new MatchList(matcher.toMatchResult());
     }
 }

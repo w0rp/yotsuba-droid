@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -78,8 +80,13 @@ public class ChanHTML {
         }
     }
 
-
     private static class TagHandler extends DefaultHandler {
+        private static Pattern boardPattern = Pattern.compile(
+            "^/([a-zA-Z0-9_]+)");
+
+        private static Pattern postPattern = Pattern.compile(
+            "(\\d+)#[a-zA-z]?(\\d+)$");
+
         List<Content> contentList;
         ContentType state = ContentType.PLAIN;
         Map<String, Object> currentData;
@@ -122,16 +129,14 @@ public class ChanHTML {
 
                     String href = atts.getValue("href");
 
-                    List<String> boardMatches
-                        = RE.search("^/([a-zA-Z0-9_]+)", href);
+                    List<String> boardMatches = RE.search(boardPattern, href);
 
                     if (!boardMatches.isEmpty()) {
                         currentData.put("boardID",
                             boardMatches.get(1).toLowerCase(Locale.ENGLISH));
                     }
 
-                    List<String> postMatches
-                        = RE.search("(\\d+)#[a-zA-z]?(\\d+)$", href);
+                    List<String> postMatches = RE.search(postPattern, href);
 
                     if (!postMatches.isEmpty()) {
                         currentData.put("threadID",
