@@ -51,6 +51,12 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
             .show();
         }
+
+        @Override
+        public void useLastPostList() {
+            // Just stop, we don't need to re-render.
+            getActivity().setProgressBarIndeterminateVisibility(false);
+        }
     }
 
     private String boardID;

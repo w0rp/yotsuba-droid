@@ -65,8 +65,8 @@ public abstract class PostLoader {
                 }
 
                 if (responseCode == 304) {
-                    // The post list hasn't been modified, use the last one.
-                    return lastPostList;
+                    // The post list hasn't been modified, so stop here.
+                    return null;
                 }
 
                 postList = loadJson(IO.streamToString(
@@ -84,8 +84,6 @@ public abstract class PostLoader {
                 lastModifiedString = lastModified.getValue();
             }
 
-            lastPostList = postList;
-
             return postList;
         }
 
@@ -94,7 +92,11 @@ public abstract class PostLoader {
             super.onPostExecute(postList);
 
             if (failure == null) {
-                onReceivePostList(postList);
+                if (postList != null) {
+                    onReceivePostList(postList);
+                } else {
+                    useLastPostList();
+                }
             } else {
                 onReceiveFailure(failure);
             }
@@ -104,7 +106,6 @@ public abstract class PostLoader {
     }
 
     private Task currentTask = null;
-    private List<Post> lastPostList;
     private String lastModifiedString;
 
     /**
@@ -141,6 +142,11 @@ public abstract class PostLoader {
      * @param postList The post list.
      */
     public abstract void onReceivePostList(List<Post> postList);
+
+    /**
+     * This method is called when the request ends with an unchanged post list.
+     */
+    public abstract void useLastPostList();
 
     /**
      * This method is called when loading a post list fails.
