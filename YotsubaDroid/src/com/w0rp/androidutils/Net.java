@@ -79,10 +79,6 @@ public class Net {
         return new Request(stream, responseCode);
     }
 
-    public static Request openRequest(URI uri) {
-        return openRequest(new HttpGet(uri));
-    }
-
     /*
      * @param
      *

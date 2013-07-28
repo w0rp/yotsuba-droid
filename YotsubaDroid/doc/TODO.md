@@ -4,7 +4,6 @@ TODO
 Essential Goals
 ---------------
 
-* Use If-Modified-Since logic for all JSON requests.
 * Moving from one thread to another one replaces the data set for the previous
   activity instance.
 

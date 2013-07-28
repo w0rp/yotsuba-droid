@@ -37,8 +37,14 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
             case BAD_JSON:
                 failureText = "An error occured when parsing the board JSON!";
             break;
-            case NETWORK_FAILURE:
+            case GENERIC_NETWORK_FAILURE:
                 failureText = "A network error broke the catalog!";
+            break;
+            case LOCATION_MISSING:
+                failureText = "404: Board missing!";
+            break;
+            case REQUEST_TIMEOUT:
+                failureText = "Request timeout, check your connection.";
             break;
             }
 
@@ -57,13 +63,11 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     }
 
     public void updateCatalog() {
-        if (catalogLoader != null) {
-            catalogLoader.cancel(true);
+        if (catalogLoader == null) {
+            return;
         }
 
         getActivity().setProgressBarIndeterminateVisibility(true);
-
-        catalogLoader = new CatalogLoader(boardID);
         catalogLoader.execute();
     }
 
@@ -86,6 +90,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
 
     public void setBoardID(String boardID) {
         this.boardID = boardID;
+        catalogLoader = new CatalogLoader(boardID);
 
         updateCatalog();
     }

@@ -68,8 +68,14 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
             case BAD_JSON:
                 failureText = "An error occured when parsing the thread JSON!";
             break;
-            case NETWORK_FAILURE:
+            case GENERIC_NETWORK_FAILURE:
                 failureText = "A network error broke the thread!";
+            break;
+            case LOCATION_MISSING:
+                failureText = "404: Thread missing!";
+            break;
+            case REQUEST_TIMEOUT:
+                failureText = "Request timeout, check your connection.";
             break;
             }
 
@@ -93,14 +99,11 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     }
 
     public void updateThread() {
-        if (threadLoader != null) {
-            threadLoader.cancel(true);
+        if (threadLoader == null) {
+            return;
         }
 
         getActivity().setProgressBarIndeterminateVisibility(true);
-
-        // TODO: Reuse instance here to ease implementation of last modified?
-        threadLoader = new ThreadLoader(currentBoardID, currentThreadID);
         threadLoader.execute();
     }
 
@@ -176,6 +179,8 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         this.currentBoardID = boardID;
         this.currentThreadID = threadID;
         this.currentPostID = postID;
+
+        threadLoader = new ThreadLoader(boardID, threadID);
 
         // TODO: Use last modified logic in PostLoader.
         updateThread();

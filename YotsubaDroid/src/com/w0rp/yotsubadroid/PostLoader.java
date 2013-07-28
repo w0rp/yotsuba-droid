@@ -3,50 +3,149 @@ package com.w0rp.yotsubadroid;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.json.JSONException;
 
+import com.w0rp.androidutils.IO;
 import com.w0rp.androidutils.Net;
 import android.os.AsyncTask;
 
-public abstract class PostLoader extends AsyncTask<Void, Void, List<Post>> {
+public abstract class PostLoader {
     public static enum FailureType {
-        NETWORK_FAILURE,
+        LOCATION_MISSING,
+        REQUEST_TIMEOUT,
+        GENERIC_NETWORK_FAILURE,
         BAD_JSON
     }
 
-    private FailureType failure = null;
+    private final class Task extends AsyncTask<Void, Void, List<Post>> {
+        private FailureType failure = null;
 
-    @Override
-    protected List<Post> doInBackground(Void... params) {
-        // TODO: Implement cancellation.
+        private HttpGet prepareGet() {
+            if (lastModifiedString == null) {
+                // Don't set the If-Modified-Since header when we can't.
+                return Net.prepareGet(getURI());
+            }
 
-        try {
-            String catalogJson = Net.openRequest(getURI()).download();
+            // The If-Modified-Since header is sent with the request.
+            return Net.prepareGet(getURI(),
+                new BasicHeader("If-Modified-Since", lastModifiedString));
+        }
 
-            return loadJson(catalogJson);
-        } catch (IOException e) {
-            failure = FailureType.NETWORK_FAILURE;
-            return null;
-        } catch (JSONException e) {
-            failure = FailureType.BAD_JSON;
-            return null;
+        @Override
+        protected final List<Post> doInBackground(Void... params) {
+            List<Post> postList = null;
+            Header lastModified = null;
+
+            try {
+                HttpResponse response = new DefaultHttpClient().execute(
+                    prepareGet());
+
+                int responseCode = response.getStatusLine().getStatusCode();
+
+                lastModified = response.getFirstHeader("Last-Modified");
+
+                if (responseCode > 400) {
+                    // Handle network failure.
+                    switch (responseCode) {
+                    case 404:
+                        failure = FailureType.LOCATION_MISSING;
+                    break;
+                    case 408:
+                        failure = FailureType.REQUEST_TIMEOUT;
+                    break;
+                    default:
+                        failure = FailureType.GENERIC_NETWORK_FAILURE;
+                    break;
+                    }
+                }
+
+                if (responseCode == 304) {
+                    // The post list hasn't been modified, use the last one.
+                    return lastPostList;
+                }
+
+                postList = loadJson(IO.streamToString(
+                    response.getEntity().getContent()));
+            } catch (IOException e) {
+                failure = FailureType.GENERIC_NETWORK_FAILURE;
+                return null;
+            } catch (JSONException e) {
+                failure = FailureType.BAD_JSON;
+                return null;
+            }
+
+            if (lastModified != null) {
+                // Set the last modified string, as set by the server exactly.
+                lastModifiedString = lastModified.getValue();
+            }
+
+            lastPostList = postList;
+
+            return postList;
+        }
+
+        @Override
+        protected final void onPostExecute(List<Post> postList) {
+            super.onPostExecute(postList);
+
+            if (failure == null) {
+                onReceivePostList(postList);
+            } else {
+                onReceiveFailure(failure);
+            }
+
+            currentTask = null;
         }
     }
 
-    @Override
-    protected void onPostExecute(List<Post> postList) {
-        super.onPostExecute(postList);
+    private Task currentTask = null;
+    private List<Post> lastPostList;
+    private String lastModifiedString;
 
-        if (failure == null) {
-            onReceivePostList(postList);
-        } else {
-            onReceiveFailure(FailureType.NETWORK_FAILURE);
+    /**
+     * Execute an asynchronous task for loading the post list.
+     *
+     * If a task is in progress, it will be replaced with a new task.
+     */
+    public final void execute() {
+        if (currentTask != null) {
+            currentTask.cancel(true);
         }
+
+        currentTask = new Task();
+        currentTask.execute();
     }
 
+    /**
+     * @return The URI to request the post list with.
+     */
     protected abstract URI getURI();
+
+    /**
+     * Given some JSON, create the post list.
+     *
+     * @param json The JSON to load the post list with.
+     * @return The post list.
+     * @throws JSONException If the JSON is invalid.
+     */
     protected abstract List<Post> loadJson(String json) throws JSONException;
+
+    /**
+     * This method is called when a post list is received.
+     *
+     * @param postList The post list.
+     */
     public abstract void onReceivePostList(List<Post> postList);
+
+    /**
+     * This method is called when loading a post list fails.
+     *
+     * @param failureType The reason why loading failed.
+     */
     public abstract void onReceiveFailure(FailureType failureType);
 }
