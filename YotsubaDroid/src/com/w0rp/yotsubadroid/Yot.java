@@ -51,7 +51,11 @@ public class Yot extends Application {
 
         try {
             boardData = new JSONObject(prefs.getString("boardData", "{}"));
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+            SLog.e("Parsing boardData JSON failed!");
+
+            return;
+        }
 
         for (String board : JSON.keys(boardData)) {
             JSONObject obj = boardData.optJSONObject(board);

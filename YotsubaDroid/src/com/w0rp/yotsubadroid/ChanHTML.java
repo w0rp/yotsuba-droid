@@ -99,6 +99,7 @@ public class ChanHTML {
             contentList.add(new Content(type, text, currentData));
         }
 
+        @Override
         public void startElement(String uri, String name, String qName,
             Attributes atts) {
 
@@ -150,10 +151,12 @@ public class ChanHTML {
             }
         }
 
+        @Override
         public void endElement(String uri, String name, String qName) {
             state = ContentType.PLAIN;
         }
 
+        @Override
         public void characters(char charList[], int start, int length) {
             String content = new String(charList, start, length);
 

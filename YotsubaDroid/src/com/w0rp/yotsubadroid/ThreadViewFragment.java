@@ -48,8 +48,8 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
             if (!initiallySkipped) {
                 initiallySkipped = true;
 
-                if (threadID != postID) {
-                    skipToPost(postID);
+                if (currentThreadID != currentPostID) {
+                    skipToPost(currentPostID);
                 }
             }
 
@@ -77,9 +77,9 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     }
 
     private final ThreadViewAdapter threadAdapter;
-    private String boardID;
-    private long threadID = 0;
-    private long postID = 0;
+    private String currentBoardID;
+    private long currentThreadID = 0;
+    private long currentPostID = 0;
     private boolean initiallySkipped = false;
     private Map<Long, Integer> postPosMap = Collections.emptyMap();
     private Stack<Long> postHistory = new Stack<Long>();
@@ -99,14 +99,15 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         // TODO: Reuse instance here to ease implementation of last modified?
-        threadLoader = new ThreadLoader(getActivity(), boardID, threadID);
+        threadLoader = new ThreadLoader(getActivity(), currentBoardID,
+            currentThreadID);
         threadLoader.execute();
     }
 
-    private void openThread(String boardID, long threadID, long postID) {
+    private void openThread(String otherBoardID, long threadID, long postID) {
         Intent intent = new Intent(getActivity(), ThreadViewActivity.class);
 
-        intent.putExtra("boardID", boardID);
+        intent.putExtra("boardID", otherBoardID);
         intent.putExtra("threadID", threadID);
         intent.putExtra("postID", postID);
 
@@ -172,9 +173,9 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     }
 
     public void setData(String boardID, long threadID, long postID) {
-        this.boardID = boardID;
-        this.threadID = threadID;
-        this.postID = postID;
+        this.currentBoardID = boardID;
+        this.currentThreadID = threadID;
+        this.currentPostID = postID;
 
         // TODO: Use last modified logic in PostLoader.
         updateThread();
@@ -244,8 +245,8 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
             return;
         }
 
-        if ((boardID == null || this.boardID.equals(boardID))
-        && threadID == this.threadID) {
+        if ((boardID == null || this.currentBoardID.equals(boardID))
+        && threadID == this.currentThreadID) {
             // The post is in this thread.
             savePosition(originatingPost.getPostNumber(), postID);
             skipToPost(postID);
@@ -253,7 +254,7 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         }
 
         if (boardID == null) {
-            boardID = this.boardID;
+            boardID = this.currentBoardID;
         }
 
         // The post is not in this thread, so open the thread.

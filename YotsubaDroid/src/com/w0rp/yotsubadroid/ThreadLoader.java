@@ -32,6 +32,7 @@ public class ThreadLoader extends PostLoader {
             + Long.toString(threadID) + ".json");
     }
 
+    @Override
     protected List<Post> loadJson(String json) {
         List<Post> postList = new ArrayList<Post>();
 

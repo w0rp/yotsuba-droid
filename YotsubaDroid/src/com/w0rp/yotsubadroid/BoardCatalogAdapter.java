@@ -27,8 +27,9 @@ public class BoardCatalogAdapter extends PostListAdapter {
         if (item == null) {
             LayoutInflater inf = LayoutInflater.from(parent.getContext());
 
-            item = (RelativeLayout) inf.inflate(R.layout.catalog_item, parent,
-                false);
+            item = inf.inflate(R.layout.catalog_item, parent, false);
+
+            assert item instanceof RelativeLayout;
         }
 
         final Post post = (Post) getItem(position);

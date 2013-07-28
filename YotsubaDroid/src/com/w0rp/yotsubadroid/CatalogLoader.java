@@ -28,6 +28,7 @@ public class CatalogLoader extends PostLoader {
             + "/catalog.json");
     }
 
+    @Override
     protected List<Post> loadJson(String json) {
         List<Post> postList = new ArrayList<Post>();
 
