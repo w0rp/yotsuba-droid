@@ -1,14 +1,8 @@
 TODO
 ====
 
-Essential Goals
----------------
-
-* Moving from one thread to another one replaces the data set for the previous
-  activity instance.
-
-Post-release Goals
--------------------
+Goals
+------
 
 * Image filename and size. (Like catalog image text)
 * Add image only view for threads.

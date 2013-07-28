@@ -62,6 +62,8 @@ public abstract class PostLoader {
                         failure = FailureType.GENERIC_NETWORK_FAILURE;
                     break;
                     }
+
+                    return null;
                 }
 
                 if (responseCode == 304) {
