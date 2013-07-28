@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import com.w0rp.androidutils.Async;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
 import com.w0rp.yotsubadroid.Yot.TBACK;
 
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -27,7 +25,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class ThreadViewFragment extends Fragment implements ThreadInteractor {
-    public class ThreadReceiver extends PostListReceiver {
+    public class ThreadLoader extends AbstractThreadLoader {
+        public ThreadLoader(String boardID, long threadID) {
+            super(boardID, threadID);
+        }
+
         @Override
         public void onReceivePostList(List<Post> postList) {
             if (postList.size() > 0) {
@@ -83,7 +85,6 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     private boolean initiallySkipped = false;
     private Map<Long, Integer> postPosMap = Collections.emptyMap();
     private Stack<Long> postHistory = new Stack<Long>();
-    private BroadcastReceiver threadReceiver;
     private ThreadLoader threadLoader;
     private ListView postListView;
 
@@ -99,8 +100,7 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         // TODO: Reuse instance here to ease implementation of last modified?
-        threadLoader = new ThreadLoader(getActivity(), currentBoardID,
-            currentThreadID);
+        threadLoader = new ThreadLoader(currentBoardID, currentThreadID);
         threadLoader.execute();
     }
 
@@ -184,21 +184,12 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
-        threadReceiver = new ThreadReceiver();
-        Async.registerClass(getActivity(), threadReceiver);
 
         postListView = (ListView) inflater.inflate(
             R.layout.thread_post_list, container);
         postListView.setAdapter(threadAdapter);
 
         return postListView;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        getActivity().unregisterReceiver(threadReceiver);
     }
 
     @Override
