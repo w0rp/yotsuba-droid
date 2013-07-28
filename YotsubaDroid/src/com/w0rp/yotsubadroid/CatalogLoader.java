@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.w0rp.androidutils.JSON;
-
 import android.app.Activity;
 import android.net.Uri;
 

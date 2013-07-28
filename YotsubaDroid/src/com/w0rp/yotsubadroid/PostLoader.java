@@ -48,19 +48,17 @@ public abstract class PostLoader extends AsyncTask<Void, Void, List<Post>> {
     protected void onPostExecute(List<Post> postList) {
         super.onPostExecute(postList);
 
-        if (postList == null) {
-            return;
-        }
-
-        JSONArray jsonPostList = new JSONArray();
-
-        for (Post post : postList) {
-            jsonPostList.put(post.toJSON());
-        }
-
         Intent intent = new Intent(getReceiverClass().getName());
 
-        intent.putExtra("jsonPostList", jsonPostList.toString());
+        if (postList != null) {
+            JSONArray jsonPostList = new JSONArray();
+
+            for (Post post : postList) {
+                jsonPostList.put(post.toJSON());
+            }
+
+            intent.putExtra("jsonPostList", jsonPostList.toString());
+        }
 
         act.sendBroadcast(intent);
     }

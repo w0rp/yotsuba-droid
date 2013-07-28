@@ -55,6 +55,25 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
 
             getActivity().setProgressBarIndeterminateVisibility(false);
         }
+
+        @Override
+        public void onReceiveFailure(FailureType failureType) {
+            getActivity().setProgressBarIndeterminateVisibility(false);
+
+            String failureText = null;
+
+            switch (failureType) {
+            case BAD_JSON:
+                failureText = "An error occured when parsing the thread JSON!";
+            break;
+            case NETWORK_FAILURE:
+                failureText = "A network error broke the thread!";
+            break;
+            }
+
+            Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
+            .show();
+        }
     }
 
     private final ThreadViewAdapter threadAdapter;

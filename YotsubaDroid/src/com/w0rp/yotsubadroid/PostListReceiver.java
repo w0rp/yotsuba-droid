@@ -14,11 +14,21 @@ import android.content.Context;
 import android.content.Intent;
 
 public abstract class PostListReceiver extends BroadcastReceiver {
+    public static enum FailureType {
+        NETWORK_FAILURE,
+        BAD_JSON
+    }
+
     @Override
     public final void onReceive(Context context, Intent intent) {
+        String jsonPostListString = intent.getStringExtra("jsonPostList");
+
+        if (jsonPostListString == null) {
+            onReceiveFailure(FailureType.NETWORK_FAILURE);
+        }
+
         try {
-            JSONArray jsonPostList = new JSONArray(
-                intent.getStringExtra("jsonPostList"));
+            JSONArray jsonPostList = new JSONArray(jsonPostListString);
 
             List<Post> postList = new ArrayList<Post>();
 
@@ -29,8 +39,11 @@ public abstract class PostListReceiver extends BroadcastReceiver {
             onReceivePostList(postList);
         } catch (JSONException e) {
             e.printStackTrace();
+
+            onReceiveFailure(FailureType.BAD_JSON);
         }
     }
 
     public abstract void onReceivePostList(List<Post> postList);
+    public abstract void onReceiveFailure(FailureType failureType);
 }

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.Toast;
 
 public class BoardCatalogFragment extends Fragment
 implements BoardCatalogAdapter.OnThreadSelectedListener {
@@ -23,6 +24,25 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         public void onReceivePostList(List<Post> postList) {
             getActivity().setProgressBarIndeterminateVisibility(false);
             catalogAdapter.setPostList(postList);
+        }
+
+        @Override
+        public void onReceiveFailure(FailureType failureType) {
+            getActivity().setProgressBarIndeterminateVisibility(false);
+
+            String failureText = null;
+
+            switch (failureType) {
+            case BAD_JSON:
+                failureText = "An error occured when parsing the board JSON!";
+            break;
+            case NETWORK_FAILURE:
+                failureText = "A network error broke the catalog!";
+            break;
+            }
+
+            Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
+            .show();
         }
     }
 
