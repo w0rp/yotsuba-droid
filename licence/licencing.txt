@@ -5,7 +5,3 @@ The source code in the package com.w0rp.yotsubadroid, and all of the Android
 XML files, including files under res/ and AndroidManifest.xml are licenced
 under the GNU General Public Licence v3. The full text of this licence can be
  found in the file gpl-3.0.txt.
-
-The source code in the package com.w0rp.androidutils is licenced under a
-2-clause BSD licence. The full text of this licence can be found in the file
-bsd.txt.
