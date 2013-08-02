@@ -12,7 +12,7 @@ Building the project
 =====================
 
 This project depends on the Android Utils project. The Utils project must be
-reference by this project to compile it. Help for how to do this is available
+referenced by this project to compile it. Help for how to do this is available
 on Google's website:
 
 http://developer.android.com/tools/projects/projects-eclipse.html
