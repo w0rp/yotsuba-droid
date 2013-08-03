@@ -30,14 +30,14 @@ public class ImageWorker implements Runnable {
     public void run() {
         // Just load the image without If-Modified-Since headers.
         // We'll check that we have the file before we even start the request.
-        Net.Request request = Net.openRequest(new HttpGet(url));
+        Net.Response response = Net.openRequest(new HttpGet(url));
 
-        if (request.failure()) {
+        if (response.failure()) {
             // TODO: Deal with failure.
             return;
         }
 
-        Yot.saveImage(filename, request.getStream());
+        Yot.saveImage(filename, response.getStream());
 
         if (listener != null) {
             Yot.runOnUiThread(new Runnable() {
