@@ -2,6 +2,8 @@ package com.w0rp.yotsubadroid;
 
 import java.util.List;
 
+import org.json.JSONException;
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,41 +13,41 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
 
-public class BoardCatalogFragment extends Fragment
-implements BoardCatalogAdapter.OnThreadSelectedListener {
-    public static final int CAT_ITEM_WIDTH = 200;
-    public static final int CAT_ITEM_HEIGHT = 200;
+import com.w0rp.androidutils.NetworkFailure;
 
-    public class CatalogLoader extends AbstractCatalogLoader {
+public final class BoardCatalogFragment extends Fragment
+implements BoardCatalogAdapter.OnThreadSelectedListener {
+    public final class CatalogLoader extends AbstractCatalogLoader {
         public CatalogLoader(String boardID) {
             super(boardID);
         }
 
         @Override
-        public void onReceivePostList(List<Post> postList) {
+        protected void onReceiveResult(List<Post> postList) {
             getActivity().setProgressBarIndeterminateVisibility(false);
             catalogAdapter.setPostList(postList);
         }
 
         @Override
-        public void onReceiveFailure(FailureType failureType) {
+        public void onReceiveFailure(NetworkFailure failure) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
             String failureText = null;
 
-            switch (failureType) {
-            case BAD_JSON:
+            if (failure.getException() instanceof JSONException) {
                 failureText = "An error occured when parsing the board JSON!";
-            break;
-            case GENERIC_NETWORK_FAILURE:
-                failureText = "A network error broke the catalog!";
-            break;
-            case LOCATION_MISSING:
-                failureText = "404: Board missing!";
-            break;
-            case REQUEST_TIMEOUT:
-                failureText = "Request timeout, check your connection.";
-            break;
+            } else {
+                switch (failure.getResponseCode()) {
+                case 404:
+                    failureText = "404: Board missing!";
+                break;
+                case 408:
+                    failureText = "Request timeout, check your connection.";
+                break;
+                default:
+                    failureText = "A network error broke the catalog!";
+                break;
+                }
             }
 
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
@@ -53,7 +55,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         }
 
         @Override
-        public void useLastPostList() {
+        protected void useLastResult() {
             // Just stop, we don't need to re-render.
             getActivity().setProgressBarIndeterminateVisibility(false);
         }

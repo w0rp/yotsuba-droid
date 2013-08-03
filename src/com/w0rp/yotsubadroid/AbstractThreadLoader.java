@@ -7,11 +7,12 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.JSON;
-
 import android.net.Uri;
 
-public abstract class AbstractThreadLoader extends PostLoader {
+import com.w0rp.androidutils.JSON;
+import com.w0rp.androidutils.NetworkLoader;
+
+public abstract class AbstractThreadLoader extends NetworkLoader<List<Post>> {
     private String boardID;
     private long threadID;
 
@@ -29,8 +30,8 @@ public abstract class AbstractThreadLoader extends PostLoader {
     }
 
     @Override
-    protected final List<Post> loadJson(String json) throws JSONException {
-        JSONObject threadObj = new JSONObject(json);
+    protected List<Post> parseData(String data) throws JSONException {
+        JSONObject threadObj = new JSONObject(data);
         List<Post> postList = new ArrayList<Post>();
 
         for (JSONObject postObj : JSON.objIter(threadObj, "posts")) {

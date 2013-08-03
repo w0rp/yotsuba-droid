@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
-import com.w0rp.yotsubadroid.Yot.TBACK;
+import org.json.JSONException;
 
 import android.app.Fragment;
 import android.content.ClipData;
@@ -24,14 +23,19 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ThreadViewFragment extends Fragment implements ThreadInteractor {
-    public class ThreadLoader extends AbstractThreadLoader {
+import com.w0rp.androidutils.NetworkFailure;
+import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
+import com.w0rp.yotsubadroid.Yot.TBACK;
+
+public final class ThreadViewFragment extends Fragment
+implements ThreadInteractor {
+    public final class ThreadLoader extends AbstractThreadLoader {
         public ThreadLoader(String boardID, long threadID) {
             super(boardID, threadID);
         }
 
         @Override
-        public void onReceivePostList(List<Post> postList) {
+        protected void onReceiveResult(List<Post> postList) {
             if (postList.size() > 0) {
                 // Use the thread's subject for the action bar title.
                 String subject = ChanHTML.rawText(postList.get(0).getSubject());
@@ -59,24 +63,25 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         }
 
         @Override
-        public void onReceiveFailure(FailureType failureType) {
+        protected void onReceiveFailure(NetworkFailure failure) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
             String failureText = null;
 
-            switch (failureType) {
-            case BAD_JSON:
+            if (failure.getException() instanceof JSONException) {
                 failureText = "An error occured when parsing the thread JSON!";
-            break;
-            case GENERIC_NETWORK_FAILURE:
-                failureText = "A network error broke the thread!";
-            break;
-            case LOCATION_MISSING:
-                failureText = "404: Thread missing!";
-            break;
-            case REQUEST_TIMEOUT:
-                failureText = "Request timeout, check your connection.";
-            break;
+            } else {
+                switch (failure.getResponseCode()) {
+                case 404:
+                    failureText = "404: Thread missing!";
+                break;
+                case 408:
+                    failureText = "Request timeout, check your connection.";
+                break;
+                default:
+                    failureText = "A network error broke the thread!";
+                break;
+                }
             }
 
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
@@ -84,7 +89,7 @@ public class ThreadViewFragment extends Fragment implements ThreadInteractor {
         }
 
         @Override
-        public void useLastPostList() {
+        protected void useLastResult() {
             // Just stop, we don't need to re-render.
             getActivity().setProgressBarIndeterminateVisibility(false);
         }

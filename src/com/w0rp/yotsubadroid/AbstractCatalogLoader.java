@@ -8,10 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.JSON;
 import android.net.Uri;
 
-public abstract class AbstractCatalogLoader extends PostLoader {
+import com.w0rp.androidutils.JSON;
+import com.w0rp.androidutils.NetworkLoader;
+
+public abstract class AbstractCatalogLoader extends NetworkLoader<List<Post>> {
     private String boardID;
 
     public AbstractCatalogLoader(String boardID) {
@@ -24,10 +26,10 @@ public abstract class AbstractCatalogLoader extends PostLoader {
     protected final URI getURI() {
         return URI.create(Yot.API_URL + Uri.encode(boardID) + "/catalog.json");
     }
-
+    
     @Override
-    protected final List<Post> loadJson(String json) throws JSONException {
-        JSONArray arr = new JSONArray(json);
+    protected final List<Post> parseData(String data) throws JSONException {
+        JSONArray arr = new JSONArray(data);
         List<Post> postList = new ArrayList<Post>();
 
         for (JSONObject pageObj : JSON.objIter(arr)) {
