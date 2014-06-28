@@ -39,7 +39,7 @@ public class Yot extends Application {
         NEVER
     }
 
-    public static final String API_URL = "https://api.4chan.org/";
+    public static final String API_URL = "https://a.4cdn.org/";
 
     private static Map<String, Board> boardMap = Coerce.emptyMap();
     private static FileRotator fileRotator = new FileRotator(200 * 1024 * 1024);
