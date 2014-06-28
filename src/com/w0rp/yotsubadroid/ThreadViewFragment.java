@@ -75,7 +75,7 @@ implements ThreadInteractor {
             String failureText = null;
 
             if (failure.getException() instanceof JSONException) {
-                failureText = "An error occured when parsing the thread JSON!";
+                failureText = "Error parsing thread, it was probably deleted!";
             } else {
                 switch (failure.getResponseCode()) {
                 case 404:
@@ -92,6 +92,8 @@ implements ThreadInteractor {
 
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
             .show();
+
+            getActivity().finish();
         }
 
         @Override

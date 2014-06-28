@@ -10,6 +10,31 @@ import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 
 public class Board {
+    /**
+     * Create a board object from JSON taken from 4chan.
+     *
+     * @param obj The 4chan JSON object.
+     * @return A new board object.
+     */
+    public static Board fromChanJSON(JSONObject obj) {
+        Board board = new Board(
+            JSON.optString(Coerce.notnull(obj), "board")
+        );
+
+        board.setTitle(JSON.optString(obj, "title"));
+        board.setWorksafe(obj.optInt("ws_board") == 1);
+        board.setPostsPerPage(obj.optInt("per_page"));
+        board.setPageCount(obj.optInt("pages"));
+
+        return board;
+    }
+
+    /**
+     * Create a board object from our own JSON representation.
+     *
+     * @param obj Our JSON representation of a board.
+     * @return A new board object.
+     */
     public static Board fromJSON(JSONObject obj) {
         Board board = new Board(JSON.optString(obj, "id"));
 

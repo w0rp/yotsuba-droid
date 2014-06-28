@@ -40,7 +40,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
             String failureText = null;
 
             if (failure.getException() instanceof JSONException) {
-                failureText = "An error occured when parsing the board JSON!";
+                failureText = "Error parsing board, it may not exist!";
             } else {
                 switch (failure.getResponseCode()) {
                 case 404:
@@ -57,6 +57,8 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
 
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
             .show();
+
+            getActivity().finish();
         }
 
         @Override

@@ -1,14 +1,25 @@
 package com.w0rp.yotsubadroid;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.w0rp.androidutils.Coerce;
+import com.w0rp.androidutils.RE;
+import com.w0rp.androidutils.RE.MatchList;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.Toast;
 
 public class BoardCatalogActivity extends Activity {
+    private static Pattern boardPattern = RE.compile(
+        "/([a-zA-Z0-9_]+)/?(?:catalog)?$"
+    );
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,24 +28,33 @@ public class BoardCatalogActivity extends Activity {
 
         setContentView(R.layout.activity_board_catalog);
 
-        @Nullable String boardID = getIntent().getStringExtra("boardID");
+        final BoardCatalogFragment fragment = Coerce.notnull(
+            findCatalogFragment()
+        );
 
-        if (boardID != null) {
-            // Load the board from the intent data.
-            Board board = Yot.cachedBoard(boardID);
+        @Nullable String boardID = null;
 
-            getActionBar().setTitle(board.getTitle());
+        if (getIntent().getData() != null) {
+            MatchList matches = RE.search(
+                boardPattern,
+                getIntent().getDataString()
+            );
 
-            @Nullable final BoardCatalogFragment fragment =
-                findCatalogFragment();
-
-            if (fragment != null) {
-                fragment.setBoardID(board.getID());
-            } else {
-                throw new AssertionError("catalog fragment missing!");
+            if (matches.size() == 2) {
+                boardID = matches.get(1);
             }
         } else {
-            throw new AssertionError("boardID not set!");
+            boardID = getIntent().getStringExtra("boardID");
+        }
+
+        @Nullable Board board = Yot.boardByID(boardID);
+
+        if (board != null) {
+            getActionBar().setTitle(board.getTitle());
+            fragment.setBoardID(board.getID());
+        } else {
+            Toast.makeText(this, "Unknown board ID!", Toast.LENGTH_LONG)
+            .show();
         }
     }
 

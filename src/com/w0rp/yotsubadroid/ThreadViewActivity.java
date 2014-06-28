@@ -1,7 +1,12 @@
 package com.w0rp.yotsubadroid;
 
+import java.util.regex.Pattern;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.w0rp.androidutils.RE;
+import com.w0rp.androidutils.RE.MatchList;
 import com.w0rp.yotsubadroid.Yot.TBACK;
 
 import android.os.Bundle;
@@ -14,6 +19,12 @@ import android.view.Window;
 public class ThreadViewActivity extends Activity {
     @Nullable ThreadViewFragment threadFrag;
 
+    private static Pattern threadPattern = RE.compile(
+        "/([a-zA-Z0-9_]+)/thread/(\\d+)"
+    );
+
+    private static Pattern postPattern = RE.compile("#[pq](\\d+)");
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,21 +33,47 @@ public class ThreadViewActivity extends Activity {
 
         setContentView(R.layout.activity_thread_view);
 
-        Intent intent = getIntent();
-
         threadFrag = (ThreadViewFragment) getFragmentManager()
             .findFragmentById(R.id.thread_view_fragment);
 
-        // Load the board from the intent data.
-        @Nullable String boardID = intent.getStringExtra("boardID");
+        if (getIntent().getData() != null) {
+            MatchList threadMatches = RE.search(
+                threadPattern,
+                getIntent().getDataString()
+            );
 
-        assert boardID != null;
+            if (threadMatches.size() == 3) {
+                @NonNull String boardID = threadMatches.get(1);
+                long threadID = Long.parseLong(threadMatches.get(2));
 
-        long threadID = intent.getLongExtra("threadID", 0);
-        long postID = intent.getLongExtra("postID", threadID);
+                long postID = 0;
 
-        if (threadFrag != null) {
-            threadFrag.setData(boardID, threadID, postID);
+                MatchList postMatches = RE.search(
+                    postPattern,
+                    getIntent().getDataString()
+                );
+
+                if (postMatches.size() == 2) {
+                    // Include the optional post ID, if set.
+                    postID = Long.parseLong(postMatches.get(1));
+                }
+
+                if (threadFrag != null) {
+                    threadFrag.setData(boardID, threadID, postID);
+                }
+            }
+        } else {
+            // Load the board from the intent data.
+            @Nullable String boardID = getIntent().getStringExtra("boardID");
+
+            assert boardID != null;
+
+            long threadID = getIntent().getLongExtra("threadID", 0);
+            long postID = getIntent().getLongExtra("postID", threadID);
+
+            if (threadFrag != null) {
+                threadFrag.setData(boardID, threadID, postID);
+            }
         }
     }
 

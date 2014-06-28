@@ -136,15 +136,12 @@ public class Yot extends Application {
         }
     }
 
-    public static Board cachedBoard(String boardID) {
-        Board boardObj = boardMap.get(boardID);
+    public static @Nullable Board boardByID(@Nullable String boardID) {
+        return boardMap.get(boardID);
+    }
 
-        if (boardObj == null) {
-            boardObj = new Board(boardID);
-            boardMap.put(boardID, boardObj);
-        }
-
-        return boardObj;
+    public static void saveBoard(Board board) {
+        boardMap.put(board.getID(), board);
     }
 
     public static List<Board> visibleBoardList() {

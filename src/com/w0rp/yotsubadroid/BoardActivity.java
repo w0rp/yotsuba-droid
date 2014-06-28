@@ -3,8 +3,6 @@ package com.w0rp.yotsubadroid;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.http.client.methods.HttpGet;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +11,6 @@ import com.w0rp.androidutils.Async;
 import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.Net;
-import com.w0rp.androidutils.SLog;
 import com.w0rp.androidutils.SingleHTTPRequestTask;
 import com.w0rp.yotsubadroid.R;
 
@@ -59,18 +56,7 @@ public class BoardActivity extends Activity implements OnItemClickListener {
             }
 
             for (JSONObject boardObj : JSON.objIter(boardJSON, "boards")) {
-                // We know for a fact that this is not null.
-                @SuppressWarnings("null")
-                @NonNull JSONObject checkedBoardObj = boardObj;
-
-                Board board = Yot.cachedBoard(
-                    JSON.optString(checkedBoardObj, "board")
-                );
-
-                board.setTitle(JSON.optString(checkedBoardObj, "title"));
-                board.setWorksafe(boardObj.optInt("ws_board") == 1);
-                board.setPostsPerPage(boardObj.optInt("per_page"));
-                board.setPageCount(boardObj.optInt("pages"));
+                Yot.saveBoard(Board.fromChanJSON(Coerce.notnull(boardObj)));
             }
 
             sendBroadcast(new Intent(BoardListReceiver.class.getName()));
@@ -128,11 +114,7 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
         setProgressBarIndeterminateVisibility(true);
 
-        HttpGet getRequest = Net.prepareGet(BOARD_JSON_URL);
-
-        SLog.i(getRequest);
-
-        new BoardDownloadTask().execute(getRequest);
+        new BoardDownloadTask().execute(Net.prepareGet(BOARD_JSON_URL));
     }
 
     @Override
