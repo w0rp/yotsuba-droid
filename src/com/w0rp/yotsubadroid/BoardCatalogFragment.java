@@ -24,9 +24,13 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         }
 
         @Override
-        protected void onReceiveResult(List<Post> postList) {
+        protected void onReceiveResult(@Nullable List<Post> postList) {
             getActivity().setProgressBarIndeterminateVisibility(false);
-            catalogAdapter.setPostList(postList);
+
+            if (postList != null) {
+                // The post list result can be null when the connection fails.
+                catalogAdapter.setPostList(postList);
+            }
         }
 
         @Override

@@ -105,11 +105,9 @@ public class ChanHTML {
     }
 
     private static class TagHandler extends DefaultHandler {
-        private static Pattern boardPattern = RE.compile(
-            "^/([a-zA-Z0-9_]+)");
-
-        private static Pattern postPattern = RE.compile(
-            "(\\d+)#[a-zA-z]?(\\d+)$");
+        private static Pattern boardPattern = RE.compile("^/([a-zA-Z0-9_]+)");
+        private static Pattern threadPattern = RE.compile("/(\\d+)#p");
+        private static Pattern postPattern = RE.compile("#p(\\d+)$");
 
         List<Content> contentList;
         ContentType state = ContentType.PLAIN;
@@ -157,6 +155,7 @@ public class ChanHTML {
                     @Nullable String href = atts.getValue("href");
 
                     List<String> boardMatches = RE.search(boardPattern, href);
+                    List<String> threadMatches = RE.search(threadPattern, href);
                     List<String> postMatches = RE.search(postPattern, href);
 
                     @Nullable String boardID = null;
@@ -168,12 +167,15 @@ public class ChanHTML {
                             .toLowerCase(Locale.ENGLISH);
                     }
 
-                    if (!postMatches.isEmpty()) {
-                        threadID = Long.parseLong(postMatches.get(1));
-                        postID = Long.parseLong(postMatches.get(2));
+                    if (!threadMatches.isEmpty()) {
+                        threadID = Long.parseLong(threadMatches.get(1));
                     }
 
-                    if (boardID != null || (postID != 0 && threadID != 0)) {
+                    if (!postMatches.isEmpty()) {
+                        postID = Long.parseLong(postMatches.get(1));
+                    }
+
+                    if (boardID != null || postID != 0) {
                         currentLinkMatch = new Content.LinkMatch(
                             boardID, threadID, postID
                         );

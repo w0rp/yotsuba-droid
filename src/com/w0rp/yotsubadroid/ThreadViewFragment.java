@@ -36,27 +36,32 @@ implements ThreadInteractor {
         }
 
         @Override
-        protected void onReceiveResult(List<Post> postList) {
-            if (postList.size() > 0) {
-                // Use the thread's subject for the action bar title.
-                String subject = ChanHTML.rawText(postList.get(0).getSubject());
-                getActivity().getActionBar().setTitle(subject);
-            }
+        protected void onReceiveResult(@Nullable List<Post> postList) {
+            if (postList != null) {
+                if (postList.size() > 0) {
+                    // Use the thread's subject for the action bar title.
+                    String subject = ChanHTML.rawText(
+                        postList.get(0).getSubject()
+                    );
 
-            postPosMap = new HashMap<Long, Integer>();
+                    getActivity().getActionBar().setTitle(subject);
+                }
 
-            // Save the posts positions for later.
-            for (int i = 0; i < postList.size(); ++i) {
-                postPosMap.put(postList.get(i).getPostNumber(), i);
-            }
+                postPosMap = new HashMap<Long, Integer>();
 
-            threadAdapter.setPostList(postList);
+                // Save the posts positions for later.
+                for (int i = 0; i < postList.size(); ++i) {
+                    postPosMap.put(postList.get(i).getPostNumber(), i);
+                }
 
-            if (!initiallySkipped) {
-                initiallySkipped = true;
+                threadAdapter.setPostList(postList);
 
-                if (currentThreadID != currentPostID) {
-                    skipToPost(currentPostID);
+                if (!initiallySkipped) {
+                    initiallySkipped = true;
+
+                    if (currentThreadID != currentPostID) {
+                        skipToPost(currentPostID);
+                    }
                 }
             }
 
@@ -127,7 +132,7 @@ implements ThreadInteractor {
 
         intent.putExtra("boardID", otherBoardID);
         intent.putExtra("threadID", threadID);
-        intent.putExtra("postID", postID);
+        intent.putExtra("postID", postID != 0 ? postID : threadID);
 
         getActivity().startActivity(intent);
     }
@@ -182,10 +187,6 @@ implements ThreadInteractor {
 
         if (postListView != null) {
             postListView.setSelection(pos);
-        }
-
-        if (postListView != null) {
-            postListView.smoothScrollToPosition(pos);
         }
     }
 
@@ -265,26 +266,28 @@ implements ThreadInteractor {
     @Override
     public void onQuotelinkClick(Post originatingPost,
     final @Nullable String boardID, long threadID, long postID) {
-        if (threadID == 0 || postID == 0) {
+        if (postID == 0) {
             return;
         }
 
         final boolean sameBoard = boardID == null
             || (currentBoardID != null && currentBoardID.equals(boardID));
 
-        if (sameBoard && threadID == currentThreadID) {
+        if (sameBoard && (threadID == 0 || threadID == currentThreadID)) {
             // The post is in this thread.
             savePosition(originatingPost.getPostNumber(), postID);
             skipToPost(postID);
             return;
         }
 
-        // The post is not in this thread, so open the thread.
-        if (boardID == null) {
-            assert currentBoardID != null;
-            openThread(currentBoardID, threadID, postID);
-        } else {
-            openThread(boardID, threadID, postID);
+        if (threadID != 0) {
+            // The post is not in this thread, so open the thread.
+            if (boardID == null) {
+                assert currentBoardID != null;
+                openThread(currentBoardID, threadID, postID);
+            } else {
+                openThread(boardID, threadID, postID);
+            }
         }
     }
 }
