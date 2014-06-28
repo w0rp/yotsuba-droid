@@ -1,5 +1,8 @@
 package com.w0rp.yotsubadroid;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.w0rp.androidutils.SpanBuilder;
 import com.w0rp.androidutils.Util;
 import com.w0rp.yotsubadroid.ChanHTML.QuotelinkClickHandler;
@@ -27,7 +30,12 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     private void renderSubject(int position, View item, Post post) {
-        TextView txtSubject = (TextView) item.findViewById(R.id.post_subject);
+        @Nullable final TextView txtSubject =
+            (TextView) item.findViewById(R.id.post_subject);
+
+        if (txtSubject == null) {
+            return;
+        }
 
         if (position == 0) {
             // Always hide the first subject.
@@ -39,7 +47,13 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     private void renderPosterName(View item, Post post) {
-        TextView txtName = (TextView) item.findViewById(R.id.post_poster_name);
+        @Nullable final TextView txtName =
+            (TextView) item.findViewById(R.id.post_poster_name);
+
+        if (txtName == null) {
+            return;
+        }
+
         String name = ChanHTML.rawText(post.getPosterName());
 
         if (post.isModPost()) {
@@ -53,10 +67,19 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     private void renderImage(View item, final Post post) {
-        RelativeLayout imageLayout =
+        @Nullable final RelativeLayout imageLayout =
             (RelativeLayout) item.findViewById(R.id.post_image_layout);
 
-        ImageView imageView = (ImageView) item.findViewById(R.id.post_image);
+        if (imageLayout == null) {
+            return;
+        }
+
+        @Nullable final ImageView imageView =
+            (ImageView) item.findViewById(R.id.post_image);
+
+        if (imageView == null) {
+            return;
+        }
 
         if (post.getFile() != null) {
             // Show layouts which have an image.
@@ -64,10 +87,8 @@ public class ThreadViewAdapter extends PostListAdapter {
             loadImage(post, imageView);
 
             imageView.setOnClickListener(new OnClickListener() {
-                @Override public void onClick(View v) {
-                    if (interactor != null) {
-                        interactor.onImageClick(post);
-                    }
+                @Override public void onClick(@Nullable View v) {
+                    interactor.onImageClick(post);
                 }
             });
         } else {
@@ -97,16 +118,27 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View item = convertView;
+    public View getView(int position,
+    @Nullable View convertView, @Nullable ViewGroup parent) {
+        @NonNull View item;
 
-        if (item == null) {
+        if (convertView == null) {
+            assert parent != null;
+
             LayoutInflater inf = LayoutInflater.from(parent.getContext());
 
-            item = inf.inflate(R.layout.thread_post, parent, false);
+            @Nullable View inflatedView = inf.inflate(
+                R.layout.thread_post, parent, false
+            );
+
+            assert inflatedView != null;
+
+            item = inflatedView;
+        } else {
+            item = convertView;
         }
 
-        final Post post = (Post) getItem(position);
+        final Post post = getItem(position);
 
         renderSubject(position, item, post);
         renderPosterName(item, post);
@@ -126,10 +158,8 @@ public class ThreadViewAdapter extends PostListAdapter {
         View btnCopy = item.findViewById(R.id.post_copy_icon);
 
         btnCopy.setOnClickListener(new OnClickListener() {
-            @Override public void onClick(View v) {
-                if (interactor != null) {
-                    interactor.onTextCopy(post);
-                }
+            @Override public void onClick(@Nullable View v) {
+                interactor.onTextCopy(post);
             }
         });
 

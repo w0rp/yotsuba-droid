@@ -3,6 +3,7 @@ package com.w0rp.yotsubadroid;
 import java.net.URI;
 
 import org.apache.http.client.methods.HttpGet;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.w0rp.androidutils.Net;
 
@@ -14,7 +15,7 @@ public class ImageWorker implements Runnable {
     private long id;
     private URI url;
     private String filename;
-    private OnImageReceivedListener listener;
+    private @Nullable OnImageReceivedListener listener;
 
     public ImageWorker(long id, URI url, String filename) {
         this.id = id;
@@ -22,7 +23,8 @@ public class ImageWorker implements Runnable {
         this.filename = filename;
     }
 
-    public void setOnImageReceivedListener(OnImageReceivedListener listener) {
+    public void setOnImageReceivedListener(
+    @Nullable OnImageReceivedListener listener) {
         this.listener = listener;
     }
 

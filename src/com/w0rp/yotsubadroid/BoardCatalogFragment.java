@@ -2,6 +2,7 @@ package com.w0rp.yotsubadroid;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 
 import android.app.Fragment;
@@ -61,9 +62,9 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         }
     }
 
-    private String boardID;
-    private BoardCatalogAdapter catalogAdapter;
-    private CatalogLoader catalogLoader;
+    private @Nullable String boardID;
+    private final BoardCatalogAdapter catalogAdapter;
+    private @Nullable CatalogLoader catalogLoader;
 
     public BoardCatalogFragment() {
         catalogAdapter = new BoardCatalogAdapter();
@@ -76,12 +77,18 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         }
 
         getActivity().setProgressBarIndeterminateVisibility(true);
-        catalogLoader.execute();
+
+        // The redundant null check makes Eclipse happy.
+        if (catalogLoader != null) {
+            catalogLoader.execute();
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
+    public View onCreateView(
+    @Nullable LayoutInflater inflater, @Nullable ViewGroup container,
+    @Nullable Bundle savedInstanceState) {
+        assert inflater != null;
 
         GridView grid = (GridView) inflater.inflate(
             R.layout.catalog_grid, container);

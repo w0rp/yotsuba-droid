@@ -1,12 +1,12 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 
 import android.app.Fragment;
@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.NetworkFailure;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
 import com.w0rp.yotsubadroid.Yot.TBACK;
@@ -96,14 +97,14 @@ implements ThreadInteractor {
     }
 
     private final ThreadViewAdapter threadAdapter;
-    private String currentBoardID;
+    private @Nullable String currentBoardID;
     private long currentThreadID = 0;
     private long currentPostID = 0;
     private boolean initiallySkipped = false;
-    private Map<Long, Integer> postPosMap = Collections.emptyMap();
+    private Map<Long, Integer> postPosMap = Coerce.emptyMap();
     private Stack<Long> postHistory = new Stack<Long>();
-    private ThreadLoader threadLoader;
-    private ListView postListView;
+    private @Nullable ThreadLoader threadLoader;
+    private @Nullable ListView postListView;
 
     public ThreadViewFragment() {
         threadAdapter = new ThreadViewAdapter(this);
@@ -115,7 +116,10 @@ implements ThreadInteractor {
         }
 
         getActivity().setProgressBarIndeterminateVisibility(true);
-        threadLoader.execute();
+
+        if (threadLoader != null) {
+            threadLoader.execute();
+        }
     }
 
     private void openThread(String otherBoardID, long threadID, long postID) {
@@ -137,6 +141,9 @@ implements ThreadInteractor {
      * @param newPostID The post we are moving to.
      */
     private void savePosition(long postID, long newPostID) {
+        final ListView checkedView = postListView;
+        assert checkedView != null;
+
         TBACK hist = Yot.backHistorySetting();
 
         if (hist == TBACK.NEVER) {
@@ -150,8 +157,8 @@ implements ThreadInteractor {
         }
 
         if (hist == TBACK.SOMETIMES
-        && pos >= postListView.getFirstVisiblePosition()
-        && pos <= postListView.getLastVisiblePosition()) {
+        && pos >= checkedView.getFirstVisiblePosition()
+        && pos <= checkedView.getLastVisiblePosition()) {
             // The position we're moving to is already visible.
             // Let's not save the something for the back button history.
             return;
@@ -173,8 +180,13 @@ implements ThreadInteractor {
             return;
         }
 
-        postListView.setSelection(pos);
-        //postListView.smoothScrollToPosition(pos);
+        if (postListView != null) {
+            postListView.setSelection(pos);
+        }
+
+        if (postListView != null) {
+            postListView.smoothScrollToPosition(pos);
+        }
     }
 
     public boolean skipBack() {
@@ -193,17 +205,22 @@ implements ThreadInteractor {
 
         threadLoader = new ThreadLoader(boardID, threadID);
 
-        // TODO: Use last modified logic in PostLoader.
         updateThread();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-        Bundle savedInstanceState) {
+    public View onCreateView(@Nullable LayoutInflater inflater,
+    @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        assert inflater != null;
 
         postListView = (ListView) inflater.inflate(
             R.layout.thread_post_list, container);
-        postListView.setAdapter(threadAdapter);
+
+        if (postListView != null) {
+            postListView.setAdapter(threadAdapter);
+        }
+
+        assert postListView != null : "thread_post_list dosen't exist!";
 
         return postListView;
     }
@@ -246,25 +263,28 @@ implements ThreadInteractor {
     }
 
     @Override
-    public void onQuotelinkClick(Post originatingPost, String boardID,
-    long threadID, long postID) {
+    public void onQuotelinkClick(Post originatingPost,
+    final @Nullable String boardID, long threadID, long postID) {
         if (threadID == 0 || postID == 0) {
             return;
         }
 
-        if ((boardID == null || this.currentBoardID.equals(boardID))
-        && threadID == this.currentThreadID) {
+        final boolean sameBoard = boardID == null
+            || (currentBoardID != null && currentBoardID.equals(boardID));
+
+        if (sameBoard && threadID == currentThreadID) {
             // The post is in this thread.
             savePosition(originatingPost.getPostNumber(), postID);
             skipToPost(postID);
             return;
         }
 
-        if (boardID == null) {
-            boardID = this.currentBoardID;
-        }
-
         // The post is not in this thread, so open the thread.
-        openThread(boardID, threadID, postID);
+        if (boardID == null) {
+            assert currentBoardID != null;
+            openThread(currentBoardID, threadID, postID);
+        } else {
+            openThread(boardID, threadID, postID);
+        }
     }
 }

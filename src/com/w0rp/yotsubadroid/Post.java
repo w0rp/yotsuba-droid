@@ -4,18 +4,23 @@ import java.net.URI;
 import java.text.DateFormat;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.w0rp.androidutils.Coerce;
+import com.w0rp.androidutils.JSON;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
 
 public class Post {
+    @SuppressWarnings("null")
     private static final DateFormat dateFormat =
         DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 
     private String boardID = "";
-    private ChanFile file = null;
+    private @Nullable ChanFile file = null;
     private long time = 0;
     private long postNumber = 0;
     private long replyTo = 0;
@@ -46,14 +51,14 @@ public class Post {
         post.setTime(obj.optLong("time"));
         post.setPostNumber(obj.optLong("no"));
         post.setReplyTo(obj.optLong("resto"));
-        post.setPosterName(obj.optString("name"));
-        post.setEmail(obj.optString("email"));
-        post.setSubject(obj.optString("sub"));
-        post.setComment(obj.optString("com"));
-        post.setTripcode(obj.optString("trip"));
-        post.setPosterID(obj.optString("id"));
-        post.setCapcode(obj.optString("capcode"));
-        post.setCountryCode(obj.optString("country"));
+        post.setPosterName(JSON.optString(obj, "name"));
+        post.setEmail(JSON.optString(obj, "email"));
+        post.setSubject(JSON.optString(obj, "sub"));
+        post.setComment(JSON.optString(obj, "com"));
+        post.setTripcode(JSON.optString(obj, "trip"));
+        post.setPosterID(JSON.optString(obj, "id"));
+        post.setCapcode(JSON.optString(obj, "capcode"));
+        post.setCountryCode(JSON.optString(obj, "country"));
 
         if (post.isThread()) {
             post.setCustomSpoiler(obj.optInt("custom_spoiler"));
@@ -69,7 +74,7 @@ public class Post {
     public static Post fromJSON(JSONObject obj) {
         JSONObject fileObj = obj.optJSONObject("file");
 
-        Post post = new Post(obj.optString("boardID"));
+        Post post = new Post(JSON.optString(obj, "boardID"));
 
         if (fileObj != null) {
             post.setFile(ChanFile.fromJSON(fileObj));
@@ -78,14 +83,14 @@ public class Post {
         post.setTime(obj.optLong("time"));
         post.setPostNumber(obj.optLong("postNumber"));
         post.setReplyTo(obj.optLong("replyTo"));
-        post.setPosterName(obj.optString("posterName"));
-        post.setEmail(obj.optString("email"));
-        post.setSubject(obj.optString("subject"));
-        post.setComment(obj.optString("comment"));
-        post.setTripcode(obj.optString("tripcode"));
-        post.setPosterID(obj.optString("posterID"));
-        post.setCapcode(obj.optString("capcode"));
-        post.setCountryCode(obj.optString("countryCode"));
+        post.setPosterName(JSON.optString(obj, "posterName"));
+        post.setEmail(JSON.optString(obj, "email"));
+        post.setSubject(JSON.optString(obj, "subject"));
+        post.setComment(JSON.optString(obj, "comment"));
+        post.setTripcode(JSON.optString(obj, "tripcode"));
+        post.setPosterID(JSON.optString(obj, "posterID"));
+        post.setCapcode(JSON.optString(obj, "capcode"));
+        post.setCountryCode(JSON.optString(obj, "countryCode"));
 
         if (post.isThread()) {
             post.setCustomSpoiler(obj.optInt("customSpoiler"));
@@ -134,11 +139,11 @@ public class Post {
 
     @SuppressLint("DefaultLocale")
     protected Post(String boardID) {
-        this.boardID = boardID.toLowerCase();
+        this.boardID = Coerce.notnull(boardID.toLowerCase());
     }
 
     @Override
-    public String toString() {
+    public @Nullable String toString() {
         return toJSON().toString();
     }
 
@@ -146,7 +151,7 @@ public class Post {
         return this.boardID;
     }
 
-    public ChanFile getFile() {
+    public @Nullable ChanFile getFile() {
         return file;
     }
 
@@ -287,6 +292,9 @@ public class Post {
         return replyTo > 0;
     }
 
+    /**
+     * @return true if the post has a file.
+     */
     public boolean hasFile() {
         return file != null && !file.isDeleted();
     }
@@ -297,27 +305,52 @@ public class Post {
         return getPosterName().contains("<span class=\"commentpostername\"");
     }
 
-    public URI getSmallFileURL() {
-        if (!hasFile()) {
-            return null;
+    /**
+     * @return The thumbnail URL for the post, or null if the post has no file.
+     */
+    public @Nullable URI getSmallFileURL() {
+        if (file != null && !file.isDeleted()) {
+            // We have to put this check in to make Eclipse happy.
+            if (file != null) {
+                String smallName = file.getSmallName();
+
+                return URI.create(
+                    "https://thumbs.4chan.org/"
+                    + Uri.encode(boardID)
+                    + "/thumb/"
+                    + smallName
+                );
+            }
         }
 
-        return URI.create("http://thumbs.4chan.org/" + Uri.encode(boardID)
-            + "/thumb/" + file.getSmallName());
+        return null;
     }
 
-    public URI getFileURL() {
-        if (!hasFile()) {
-            return null;
+    /**
+     * @return The full file URL for the post, or null if the post has no file.
+     */
+    public @Nullable URI getFileURL() {
+        if (file != null && !file.isDeleted()) {
+            // We have to put this check in to make Eclipse happy.
+            if (file != null) {
+                String name = file.getName();
+
+                return URI.create(
+                    "https://images.4chan.org/"
+                    + Uri.encode(boardID)
+                    + "/src/"
+                    + name
+                );
+            }
         }
 
-        return URI.create("http://images.4chan.org/" + Uri.encode(boardID)
-            + "/src/" + file.getName());
+        return null;
     }
 
     /**
      * @return The time and date in a locale dependent format.
      */
+    @SuppressWarnings("null")
     public String getFormattedTime() {
         // Date expects milliseconds, not seconds.
         return dateFormat.format(new Date(time * 1000));

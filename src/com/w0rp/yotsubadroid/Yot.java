@@ -10,9 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.FileRotator;
 import com.w0rp.androidutils.IO;
 import com.w0rp.androidutils.JSON;
@@ -38,19 +41,18 @@ public class Yot extends Application {
 
     public static final String API_URL = "https://api.4chan.org/";
 
-    private static Context context;
-    private static Map<String, Board> boardMap;
-    private static SharedPreferences prefs;
-    private static Drawable defCatImage;
-    private static FileRotator fileRotator;
+    private static Map<String, Board> boardMap = Coerce.emptyMap();
+    private static FileRotator fileRotator = new FileRotator(200 * 1024 * 1024);
+    private static @Nullable Context context;
+    private static @Nullable SharedPreferences prefs;
 
-    private static void loadBoardMap() {
+    private static void loadBoardMap(SharedPreferences sharedPrefs) {
         boardMap = new HashMap<String, Board>();
 
-        JSONObject boardData = null;
+        @Nullable JSONObject boardData = null;
 
         try {
-            boardData = new JSONObject(prefs.getString("boardData", "{}"));
+            boardData = new JSONObject(sharedPrefs.getString("boardData", "{}"));
         } catch (JSONException e) {
             SLog.e("Parsing boardData JSON failed!");
 
@@ -81,9 +83,11 @@ public class Yot extends Application {
     }
 
     private static File cacheSubdir(String dirname) {
+        assert context != null;
         File cacheDir = context.getExternalCacheDir();
 
         if (cacheDir == null) {
+            assert context != null;
             cacheDir = context.getCacheDir();
         }
 
@@ -98,22 +102,35 @@ public class Yot extends Application {
         return new File(dir + "/" + filename);
     }
 
+    /**
+     * Save the preferences for the application.
+     */
     public static void save() {
-        Editor edit = prefs.edit();
+        assert prefs != null;
+
+        @SuppressWarnings("null")
+        @NonNull Editor edit = prefs.edit();
 
         saveBoardMap(edit);
 
         edit.commit();
     }
 
+    /**
+     * @return true if non worksafe boards are enabled.
+     */
     public static boolean nsfwEnabled() {
+        assert prefs != null;
+
         return prefs.getBoolean("pref_nsfw", false);
     }
 
     public static TBACK backHistorySetting() {
+        assert prefs != null;
+
         try {
-            return Enum.valueOf(TBACK.class,
-                prefs.getString("pref_thread_back", "ALWAYS"));
+            return Coerce.notnull(Enum.valueOf(TBACK.class,
+                prefs.getString("pref_thread_back", "ALWAYS")));
         } catch (Exception e) {
             return TBACK.ALWAYS;
         }
@@ -152,14 +169,17 @@ public class Yot extends Application {
     }
 
     public static Drawable defaultCatImage() {
-        return defCatImage;
+        assert context != null;
+
+        return Coerce.notnull(context.getResources().getDrawable(
+            android.R.drawable.ic_menu_save));
     }
 
     public static boolean cachedFileExists(String filename) {
         return cachedFile(filename).exists();
     }
 
-    public static Bitmap loadImage(String filename) {
+    public static @Nullable Bitmap loadImage(String filename) {
         File inFile = cachedFile(filename);
 
         if (!inFile.exists()) {
@@ -193,9 +213,12 @@ public class Yot extends Application {
     }
 
     public static void runOnUiThread(final Runnable runnable) {
+        assert context != null;
+
+        @SuppressWarnings("null")
         Handler handler = new Handler(context.getMainLooper()) {
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(@Nullable Message msg) {
                 runnable.run();
             }
         };
@@ -210,15 +233,11 @@ public class Yot extends Application {
         context = this;
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        loadBoardMap();
-
-        defCatImage = getResources().getDrawable(
-            android.R.drawable.ic_menu_save);
+        if (prefs != null) {
+            loadBoardMap(prefs);
+        }
 
         // Delete all of the saved images when the application starts.
         deleteAllImages();
-
-        // TODO: Get MB size from setting.
-        fileRotator = new FileRotator(200 * 1024 * 1024);
     }
 }

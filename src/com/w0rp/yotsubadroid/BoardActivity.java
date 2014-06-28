@@ -3,6 +3,9 @@ package com.w0rp.yotsubadroid;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.http.client.methods.HttpGet;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +13,7 @@ import com.w0rp.androidutils.Async;
 import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.Net;
+import com.w0rp.androidutils.SLog;
 import com.w0rp.androidutils.SingleHTTPRequestTask;
 import com.w0rp.yotsubadroid.R;
 
@@ -28,9 +32,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class BoardActivity extends Activity implements OnItemClickListener {
+    private static final URI BOARD_JSON_URL = Coerce.notnull(URI.create(
+        Yot.API_URL + "boards.json"
+    ));
+
     private class BoardDownloadTask extends SingleHTTPRequestTask {
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(@Nullable String result) {
             super.onPostExecute(result);
 
             if (Coerce.empty(result)) {
@@ -51,9 +59,15 @@ public class BoardActivity extends Activity implements OnItemClickListener {
             }
 
             for (JSONObject boardObj : JSON.objIter(boardJSON, "boards")) {
-                Board board = Yot.cachedBoard(boardObj.optString("board"));
+                // We know for a fact that this is not null.
+                @SuppressWarnings("null")
+                @NonNull JSONObject checkedBoardObj = boardObj;
 
-                board.setTitle(boardObj.optString("title"));
+                Board board = Yot.cachedBoard(
+                    JSON.optString(checkedBoardObj, "board")
+                );
+
+                board.setTitle(JSON.optString(checkedBoardObj, "title"));
                 board.setWorksafe(boardObj.optInt("ws_board") == 1);
                 board.setPostsPerPage(boardObj.optInt("per_page"));
                 board.setPageCount(boardObj.optInt("pages"));
@@ -65,31 +79,38 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
     private class BoardListReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(
+        @Nullable Context context, @Nullable Intent intent) {
             setProgressBarIndeterminateVisibility(false);
             populateBoardList();
         }
     }
 
-    private ArrayAdapter<String> boardAdapter;
-    private BoardListReceiver boardListReceiver;
-    private List<Board> currentBoardList;
+    private @Nullable ArrayAdapter<String> boardAdapter;
+    private @Nullable BoardListReceiver boardListReceiver;
+    private List<Board> currentBoardList = Coerce.emptyList();
 
     private void populateBoardList() {
-        boardAdapter.setNotifyOnChange(false);
-        boardAdapter.clear();
+        final ArrayAdapter<String> checkedAdapter = boardAdapter;
+
+        if (checkedAdapter == null) {
+            return;
+        }
+
+        checkedAdapter.setNotifyOnChange(false);
+        checkedAdapter.clear();
 
         currentBoardList = Yot.visibleBoardList();
 
         for (Board board : currentBoardList) {
-            boardAdapter.add("/" + board.getID() + "/ - " + board.getTitle());
+            checkedAdapter.add("/" + board.getID() + "/ - " + board.getTitle());
         }
 
-        boardAdapter.notifyDataSetChanged();
+        checkedAdapter.notifyDataSetChanged();
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
@@ -107,8 +128,11 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
         setProgressBarIndeterminateVisibility(true);
 
-        new BoardDownloadTask().execute(Net.prepareGet(URI.create(Yot.API_URL
-            + "boards.json")));
+        HttpGet getRequest = Net.prepareGet(BOARD_JSON_URL);
+
+        SLog.i(getRequest);
+
+        new BoardDownloadTask().execute(getRequest);
     }
 
     @Override
@@ -133,14 +157,18 @@ public class BoardActivity extends Activity implements OnItemClickListener {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@Nullable Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@Nullable MenuItem item) {
+        if (item == null) {
+            return false;
+        }
+
         switch (item.getItemId()) {
         case R.id.menu_settings: {
             Intent intent = new Intent(this, BoardPreferenceActivity.class);
@@ -153,9 +181,10 @@ public class BoardActivity extends Activity implements OnItemClickListener {
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
+    public void onItemClick(
+    @Nullable AdapterView<?> parent, @Nullable View view, int position,
         long id) {
-        if (currentBoardList == null || position >= currentBoardList.size()) {
+        if (position >= currentBoardList.size()) {
             return;
         }
 

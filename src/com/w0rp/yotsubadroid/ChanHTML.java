@@ -2,23 +2,22 @@ package com.w0rp.yotsubadroid;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.RE;
 import com.w0rp.androidutils.SLog;
 import com.w0rp.androidutils.SpanBuilder;
@@ -41,70 +40,99 @@ public class ChanHTML {
     }
 
     private static class Content {
-        private ContentType type;
-        private String text;
-        private Map<String, Object> data;
+        public static class LinkMatch {
+            private @Nullable final String boardID;
+            private final long threadID;
+            private final long postID;
+
+            public LinkMatch(@Nullable String boardID, long threadID,
+            long postID) {
+                this.boardID = boardID;
+                this.threadID = threadID;
+                this.postID = postID;
+            }
+
+            public @Nullable String getBoardID() {
+                return boardID;
+            }
+
+            public long getThreadID() {
+                return threadID;
+            }
+
+            public long getPostID() {
+                return postID;
+            }
+
+            @Override
+            public String toString() {
+                return "board: "
+                    + boardID
+                    + ", thread: "
+                    + threadID
+                    + ", post: "
+                    + postID;
+            }
+        }
+
+        private final ContentType type;
+        private final String text;
+        private final @Nullable LinkMatch linkMatch;
 
         public Content(ContentType type, String text,
-        Map<String, Object> data) {
+        @Nullable LinkMatch linkMatch) {
             this.type = type;
             this.text = text;
-            this.data = data;
+            this.linkMatch = linkMatch;
         }
 
         public String getText() {
-            return this.text;
+            return text;
         }
 
         public ContentType getType() {
-            return this.type;
+            return type;
         }
 
-        public Map<String, Object> getData() {
-            if (this.data == null) {
-                return Collections.emptyMap();
-            }
-
-            return Collections.unmodifiableMap(this.data);
+        public @Nullable LinkMatch getLinkMatch() {
+            return linkMatch;
         }
 
         @Override
         public String toString() {
-            String out = "[" + this.type.toString() + ": " + this.text + "]";
-
-            if (data != null) {
-                out += data.toString();
-            }
-
-            return out;
+            return "[" + type + ": " + text + "]" + linkMatch;
         }
     }
 
     private static class TagHandler extends DefaultHandler {
-        private static Pattern boardPattern = Pattern.compile(
+        private static Pattern boardPattern = RE.compile(
             "^/([a-zA-Z0-9_]+)");
 
-        private static Pattern postPattern = Pattern.compile(
+        private static Pattern postPattern = RE.compile(
             "(\\d+)#[a-zA-z]?(\\d+)$");
 
         List<Content> contentList;
         ContentType state = ContentType.PLAIN;
-        Map<String, Object> currentData;
+        @Nullable Content.LinkMatch currentLinkMatch;
 
         public TagHandler() {
             contentList = new ArrayList<Content>();
         }
 
         public void add(ContentType type, String text) {
-            contentList.add(new Content(type, text, currentData));
+            contentList.add(new Content(type, text, currentLinkMatch));
         }
 
         @Override
-        public void startElement(String uri, String name, String qName,
-            Attributes atts) {
+        public void startElement(@Nullable String uri, @Nullable String name,
+        @Nullable String qName, @Nullable Attributes atts) {
+            assert uri != null;
+            assert name != null;
+            assert qName != null;
+            assert atts != null;
 
             state = ContentType.PLAIN;
-            currentData = null;
+            currentLinkMatch = null;
 
             if (name.equals("br")) {
                 add(ContentType.PLAIN, "\n");
@@ -126,24 +154,29 @@ public class ChanHTML {
                 if ("quotelink".equals(aClass)) {
                     state = ContentType.QUOTELINK;
 
-                    currentData = new HashMap<String, Object>();
-
-                    String href = atts.getValue("href");
+                    @Nullable String href = atts.getValue("href");
 
                     List<String> boardMatches = RE.search(boardPattern, href);
-
-                    if (!boardMatches.isEmpty()) {
-                        currentData.put("boardID",
-                            boardMatches.get(1).toLowerCase(Locale.ENGLISH));
-                    }
-
                     List<String> postMatches = RE.search(postPattern, href);
 
+                    @Nullable String boardID = null;
+                    long postID = 0;
+                    long threadID = 0;
+
+                    if (!boardMatches.isEmpty()) {
+                        boardID = boardMatches.get(1)
+                            .toLowerCase(Locale.ENGLISH);
+                    }
+
                     if (!postMatches.isEmpty()) {
-                        currentData.put("threadID",
-                            Long.parseLong(postMatches.get(1)));
-                        currentData.put("postID",
-                            Long.parseLong(postMatches.get(2)));
+                        threadID = Long.parseLong(postMatches.get(1));
+                        postID = Long.parseLong(postMatches.get(2));
+                    }
+
+                    if (boardID != null || (postID != 0 && threadID != 0)) {
+                        currentLinkMatch = new Content.LinkMatch(
+                            boardID, threadID, postID
+                        );
                     }
                 }
             } else {
@@ -152,12 +185,14 @@ public class ChanHTML {
         }
 
         @Override
-        public void endElement(String uri, String name, String qName) {
+        public void endElement(
+        @Nullable String uri, @Nullable String name, @Nullable String qName) {
             state = ContentType.PLAIN;
         }
 
         @Override
-        public void characters(char charList[], int start, int length) {
+        public void characters(
+        @Nullable char[] charList, int start, int length) {
             String content = new String(charList, start, length);
 
             if (content.length() == 0) {
@@ -169,9 +204,16 @@ public class ChanHTML {
     }
 
     public interface QuotelinkClickHandler {
-        public void onQuotelinkClick(Post post, String boardID, long threadID,
+        public void onQuotelinkClick(Post post, @Nullable String boardID, long threadID,
             long postID);
     }
+
+    private static QuotelinkClickHandler NULL_QUOTE_HANDLER =
+    new QuotelinkClickHandler() {
+        @Override
+        public void onQuotelinkClick(Post post, @Nullable String boardID, long threadID,
+        long postID) {}
+    };
 
     public static final class TextGenerator {
         private class SpoilerSpan extends ClickableSpan {
@@ -182,7 +224,7 @@ public class ChanHTML {
             }
 
             @Override
-            public void onClick(View widget) {
+            public void onClick(@Nullable View widget) {
                 if (spoilerRevealSet.contains(spoilerIndex)) {
                     spoilerRevealSet.remove(spoilerIndex);
                 } else {
@@ -193,8 +235,12 @@ public class ChanHTML {
             }
 
             @Override
-            public void updateDrawState(TextPaint ds) {
+            public void updateDrawState(@Nullable TextPaint ds) {
                 super.updateDrawState(ds);
+
+                if (ds == null) {
+                    return;
+                }
 
                 ds.setUnderlineText(false);
 
@@ -214,25 +260,27 @@ public class ChanHTML {
             }
 
             @Override
-            public void onClick(View widget) {
-                if (quoteHandler != null) {
-                    Map<String, Object> data = content.getData();
+            public void onClick(@Nullable View widget) {
+                @Nullable final Content.LinkMatch linkMatch
+                    = content.getLinkMatch();
 
-                    Long threadID = (Long) data.get("threadID");
-                    Long postID = (Long) data.get("postID");
-
-                    quoteHandler.onQuotelinkClick(post,
-                        (String) data.get("boardID"),
-                        threadID != null ? threadID : 0,
-                        postID != null ? postID : 0);
+                if (linkMatch != null) {
+                    quoteHandler.onQuotelinkClick(
+                        post,
+                        linkMatch.getBoardID(),
+                        linkMatch.getThreadID(),
+                        linkMatch.getPostID()
+                    );
                 }
             }
 
             @Override
-            public void updateDrawState(TextPaint ds) {
+            public void updateDrawState(@Nullable TextPaint ds) {
                 super.updateDrawState(ds);
 
-                ds.setColor(QUOTELINK_COLOR);
+                if (ds != null) {
+                    ds.setColor(QUOTELINK_COLOR);
+                }
             }
         }
 
@@ -240,7 +288,7 @@ public class ChanHTML {
         private final TextView textView;
         private final Post post;
         private final List<Content> contentList;
-        private QuotelinkClickHandler quoteHandler;
+        private QuotelinkClickHandler quoteHandler = NULL_QUOTE_HANDLER;
 
         public TextGenerator(TextView textView, Post post) {
             assert(textView != null);
@@ -276,24 +324,33 @@ public class ChanHTML {
                     sb.append(content.getText());
                 break;
                 case QUOTE:
-                    sb.append(content.getText(),
-                        SpanBuilder.fg(QUOTE_COLOR));
+                    sb.append(
+                        content.getText(),
+                        SpanBuilder.fg(QUOTE_COLOR)
+                    );
                 break;
                 case DEADLINK:
-                    sb.append(content.getText(),
+                    sb.append(
+                        content.getText(),
                         SpanBuilder.fg(QUOTELINK_COLOR),
-                        SpanBuilder.strike());
+                        SpanBuilder.strike()
+                    );
                 break;
                 case QUOTELINK:
-                    sb.append(content.getText(),
-                        new QuoteLinkSpan(content));
+                    sb.append(
+                        content.getText(),
+                        new QuoteLinkSpan(content)
+                    );
                 break;
                 case SPOILER: {
                     // Attach the spoiler span so we can tap spoilers to
                     // reveal them.
-                    sb.append(content.getText(),
+                    sb.append(
+                        content.getText(),
                         SpanBuilder.bg(SPOILER_BG),
-                        new SpoilerSpan(spoilerIndex));
+                        new SpoilerSpan(spoilerIndex)
+                    );
+
                     spoilerLast = true;
                 } break;
                 }
@@ -356,6 +413,6 @@ public class ChanHTML {
             sb.append(content.getText());
         }
 
-        return sb.toString();
+        return Coerce.notnull(sb.toString());
     }
 }
