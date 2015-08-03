@@ -1,13 +1,13 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.Util;
 
 import android.graphics.Bitmap;
@@ -18,12 +18,12 @@ import android.widget.ImageView;
 
 public abstract class PostListAdapter extends BaseAdapter
 implements ImageWorker.OnImageReceivedListener {
-    private List<Post> postList = Coerce.emptyList();
+    private List<Post> postList = Collections.emptyList();
     private final ThreadPoolExecutor pool;
     private final Map<Long, ImageView> imageMap;
 
     public PostListAdapter() {
-        pool = Util.pool(32, 5, Coerce.notnull(TimeUnit.SECONDS));
+        pool = Util.pool(32, 5, TimeUnit.SECONDS);
         imageMap = new HashMap<Long, ImageView>();
     }
 
@@ -34,7 +34,7 @@ implements ImageWorker.OnImageReceivedListener {
             return;
         }
 
-        ChanFile file = Coerce.notnull(post.getFile());
+        ChanFile file = post.getFile();
 
         if (file.isDeleted()) {
             // Use the filedeleted image when files have been deleted.
@@ -70,7 +70,7 @@ implements ImageWorker.OnImageReceivedListener {
         // ImageView in the map. We'll load it in later.
         imageMap.put(id, imageView);
 
-        final URI url = Coerce.notnull(post.getSmallFileURL());
+        final URI url = post.getSmallFileURL();
 
         ImageWorker worker = new ImageWorker(id, url, filename);
         worker.setOnImageReceivedListener(this);
@@ -103,7 +103,7 @@ implements ImageWorker.OnImageReceivedListener {
     @Override
     public Post getItem(int position) {
         // We know this is not null from the checks in setPostList.
-        return Coerce.notnull(postList.get(position));
+        return postList.get(position);
     }
 
     public void setPostList(List<Post> postList) {

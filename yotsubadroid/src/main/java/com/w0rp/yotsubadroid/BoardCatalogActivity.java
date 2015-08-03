@@ -2,8 +2,6 @@ package com.w0rp.yotsubadroid;
 
 import java.util.regex.Pattern;
 
-import com.w0rp.androidutils.Coerce;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.annotation.Nullable;
@@ -25,11 +23,9 @@ public class BoardCatalogActivity extends Activity {
 
         setContentView(R.layout.activity_board_catalog);
 
-        final BoardCatalogFragment fragment = Coerce.notnull(
-            findCatalogFragment()
-        );
+        final BoardCatalogFragment fragment = findCatalogFragment();
 
-        @Nullable String boardID = null;
+        String boardID = null;
 
         if (getIntent().getData() != null) {
             MatchList matches = RE.search(
@@ -44,7 +40,7 @@ public class BoardCatalogActivity extends Activity {
             boardID = getIntent().getStringExtra("boardID");
         }
 
-        @Nullable Board board = Yot.boardByID(boardID);
+        Board board = Yot.boardByID(boardID);
 
         if (board != null) {
             getActionBar().setTitle(board.getTitle());

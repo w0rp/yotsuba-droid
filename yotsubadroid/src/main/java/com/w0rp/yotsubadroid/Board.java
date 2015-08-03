@@ -1,12 +1,12 @@
 package com.w0rp.yotsubadroid;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 
 public class Board {
@@ -16,9 +16,9 @@ public class Board {
      * @param obj The 4chan JSON object.
      * @return A new board object.
      */
-    public static Board fromChanJSON(JSONObject obj) {
+    public static Board fromChanJSON(@NonNull JSONObject obj) {
         Board board = new Board(
-            JSON.optString(Coerce.notnull(obj), "board")
+            JSON.optString(obj, "board")
         );
 
         board.setTitle(JSON.optString(obj, "title"));

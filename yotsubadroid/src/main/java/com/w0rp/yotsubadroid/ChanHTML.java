@@ -16,11 +16,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.SLog;
 import com.w0rp.androidutils.SpanBuilder;
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -407,7 +407,7 @@ public class ChanHTML {
         return handler.contentList;
     }
 
-    public static String rawText(String html) {
+    public static @NonNull String rawText(String html) {
         StringBuilder sb = new StringBuilder();
 
         for (Content content : parse(html)) {
@@ -419,6 +419,6 @@ public class ChanHTML {
             sb.append(content.getText());
         }
 
-        return Coerce.notnull(sb.toString());
+        return sb.toString();
     }
 }

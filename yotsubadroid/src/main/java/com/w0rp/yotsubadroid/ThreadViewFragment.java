@@ -1,6 +1,8 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.NetworkFailure;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
 import com.w0rp.yotsubadroid.Yot.TBACK;
@@ -108,7 +109,7 @@ implements ThreadInteractor {
     private long currentThreadID = 0;
     private long currentPostID = 0;
     private boolean initiallySkipped = false;
-    private Map<Long, Integer> postPosMap = Coerce.emptyMap();
+    private Map<Long, Integer> postPosMap = Collections.emptyMap();
     private Stack<Long> postHistory = new Stack<Long>();
     private @Nullable ThreadLoader threadLoader;
     private @Nullable ListView postListView;

@@ -7,7 +7,6 @@ import java.util.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 
 import android.annotation.SuppressLint;
@@ -140,7 +139,7 @@ public class Post {
 
     @SuppressLint("DefaultLocale")
     protected Post(String boardID) {
-        this.boardID = Coerce.notnull(boardID.toLowerCase());
+        this.boardID = boardID.toLowerCase();
     }
 
     @Override

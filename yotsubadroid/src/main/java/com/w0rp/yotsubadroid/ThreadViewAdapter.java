@@ -28,7 +28,7 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     private void renderSubject(int position, View item, Post post) {
-        @Nullable final TextView txtSubject =
+        final TextView txtSubject =
             (TextView) item.findViewById(R.id.post_subject);
 
         if (txtSubject == null) {

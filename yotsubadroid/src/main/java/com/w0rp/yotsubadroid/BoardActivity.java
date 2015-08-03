@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.w0rp.androidutils.Async;
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.Net;
 import com.w0rp.androidutils.SingleHTTPRequestTask;
@@ -29,16 +28,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class BoardActivity extends Activity implements OnItemClickListener {
-    private static final URI BOARD_JSON_URL = Coerce.notnull(URI.create(
+    private static final URI BOARD_JSON_URL = URI.create(
         Yot.API_URL + "boards.json"
-    ));
+    );
 
     private class BoardDownloadTask extends SingleHTTPRequestTask {
         @Override
         protected void onPostExecute(@Nullable String result) {
             super.onPostExecute(result);
 
-            if (Coerce.empty(result)) {
+            if (result == null || result.length() == 0) {
                 // TODO: Notify of failure here somehow.
 
                 setProgressBarIndeterminateVisibility(false);
@@ -56,7 +55,7 @@ public class BoardActivity extends Activity implements OnItemClickListener {
             }
 
             for (JSONObject boardObj : JSON.objIter(boardJSON, "boards")) {
-                Yot.saveBoard(Board.fromChanJSON(Coerce.notnull(boardObj)));
+                Yot.saveBoard(Board.fromChanJSON(boardObj));
             }
 
             sendBroadcast(new Intent(BoardListReceiver.class.getName()));

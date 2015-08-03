@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.NetworkLoader;
 
@@ -26,11 +25,9 @@ public abstract class AbstractThreadLoader extends NetworkLoader<List<Post>> {
     }
 
     @Override
-    protected final URI getURI() {
-        return Coerce.notnull(
-            URI.create(Yot.API_URL + Uri.encode(boardID) + "/res/"
-                + Long.toString(threadID) + ".json")
-        );
+    protected final @NonNull URI getURI() {
+        return URI.create(Yot.API_URL + Uri.encode(boardID) + "/res/"
+                + Long.toString(threadID) + ".json");
     }
 
     @Override
@@ -40,8 +37,7 @@ public abstract class AbstractThreadLoader extends NetworkLoader<List<Post>> {
 
         for (JSONObject postObj : JSON.objIter(threadObj, "posts")) {
             // We know for a fact that this is not null.
-            @SuppressWarnings("null")
-            @NonNull JSONObject checkedPostObj = postObj;
+            JSONObject checkedPostObj = postObj;
 
             Post post = Post.fromChanJSON(boardID, checkedPostObj);
             postList.add(post);

@@ -13,7 +13,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.Coerce;
 import com.w0rp.androidutils.FileRotator;
 import com.w0rp.androidutils.IO;
 import com.w0rp.androidutils.JSON;
@@ -41,7 +40,7 @@ public class Yot extends Application {
 
     public static final String API_URL = "https://a.4cdn.org/";
 
-    private static Map<String, Board> boardMap = Coerce.emptyMap();
+    private static Map<String, Board> boardMap = Collections.emptyMap();
     private static FileRotator fileRotator = new FileRotator(200 * 1024 * 1024);
     private static @Nullable Context context;
     private static @Nullable SharedPreferences prefs;
@@ -49,7 +48,7 @@ public class Yot extends Application {
     private static void loadBoardMap(SharedPreferences sharedPrefs) {
         boardMap = new HashMap<String, Board>();
 
-        @Nullable JSONObject boardData = null;
+        JSONObject boardData = null;
 
         try {
             boardData = new JSONObject(sharedPrefs.getString("boardData", "{}"));
@@ -108,8 +107,7 @@ public class Yot extends Application {
     public static void save() {
         assert prefs != null;
 
-        @SuppressWarnings("null")
-        @NonNull Editor edit = prefs.edit();
+        Editor edit = prefs.edit();
 
         saveBoardMap(edit);
 
@@ -129,8 +127,10 @@ public class Yot extends Application {
         assert prefs != null;
 
         try {
-            return Coerce.notnull(Enum.valueOf(TBACK.class,
-                prefs.getString("pref_thread_back", "ALWAYS")));
+            return Enum.valueOf(
+                TBACK.class,
+                prefs.getString("pref_thread_back", "ALWAYS")
+            );
         } catch (Exception e) {
             return TBACK.ALWAYS;
         }
@@ -165,11 +165,11 @@ public class Yot extends Application {
         return list;
     }
 
-    public static Drawable defaultCatImage() {
+    public static @NonNull Drawable defaultCatImage() {
         assert context != null;
 
-        return Coerce.notnull(context.getResources().getDrawable(
-            android.R.drawable.ic_menu_save));
+        return context.getResources().getDrawable(
+            android.R.drawable.ic_menu_save);
     }
 
     public static boolean cachedFileExists(String filename) {

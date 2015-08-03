@@ -8,6 +8,7 @@ import com.w0rp.yotsubadroid.Yot.TBACK;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +41,7 @@ public class ThreadViewActivity extends Activity {
             );
 
             if (threadMatches.size() == 3) {
-                @NonNull String boardID = threadMatches.get(1);
+                String boardID = threadMatches.get(1);
                 long threadID = Long.parseLong(threadMatches.get(2));
 
                 long postID = 0;
@@ -61,7 +62,7 @@ public class ThreadViewActivity extends Activity {
             }
         } else {
             // Load the board from the intent data.
-            @Nullable String boardID = getIntent().getStringExtra("boardID");
+            String boardID = getIntent().getStringExtra("boardID");
 
             assert boardID != null;
 
