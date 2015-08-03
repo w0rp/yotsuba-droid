@@ -1,9 +1,8 @@
 package com.w0rp.yotsubadroid;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
-import com.w0rp.androidutils.RE;
-import com.w0rp.androidutils.RE.MatchList;
 import com.w0rp.yotsubadroid.Yot.TBACK;
 
 import android.os.Bundle;
@@ -17,11 +16,11 @@ import android.view.Window;
 public class ThreadViewActivity extends Activity {
     @Nullable ThreadViewFragment threadFrag;
 
-    private static Pattern threadPattern = RE.compile(
+    private static Pattern threadPattern = Pattern.compile(
         "/([a-zA-Z0-9_]+)/thread/(\\d+)"
     );
 
-    private static Pattern postPattern = RE.compile("#[pq](\\d+)");
+    private static Pattern postPattern = Pattern.compile("#[pq](\\d+)");
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class ThreadViewActivity extends Activity {
             .findFragmentById(R.id.thread_view_fragment);
 
         if (getIntent().getData() != null) {
-            MatchList threadMatches = RE.search(
+            List<String> threadMatches = Util.search(
                 threadPattern,
                 getIntent().getDataString()
             );
@@ -46,7 +45,7 @@ public class ThreadViewActivity extends Activity {
 
                 long postID = 0;
 
-                MatchList postMatches = RE.search(
+                List<String> postMatches = Util.search(
                     postPattern,
                     getIntent().getDataString()
                 );

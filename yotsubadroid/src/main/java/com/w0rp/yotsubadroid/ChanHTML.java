@@ -17,7 +17,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.w0rp.androidutils.Coerce;
-import com.w0rp.androidutils.RE;
 import com.w0rp.androidutils.SLog;
 import com.w0rp.androidutils.SpanBuilder;
 
@@ -106,9 +105,12 @@ public class ChanHTML {
     }
 
     private static class TagHandler extends DefaultHandler {
-        private static Pattern boardPattern = RE.compile("^/([a-zA-Z0-9_]+)");
-        private static Pattern threadPattern = RE.compile("/(\\d+)#p");
-        private static Pattern postPattern = RE.compile("#p(\\d+)$");
+        private static Pattern boardPattern =
+            Pattern.compile("^/([a-zA-Z0-9_]+)");
+        private static Pattern threadPattern =
+            Pattern.compile("/(\\d+)#p");
+        private static Pattern postPattern =
+            Pattern.compile("#p(\\d+)$");
 
         List<Content> contentList;
         ContentType state = ContentType.PLAIN;
@@ -155,9 +157,11 @@ public class ChanHTML {
 
                     String href = atts.getValue("href");
 
-                    List<String> boardMatches = RE.search(boardPattern, href);
-                    List<String> threadMatches = RE.search(threadPattern, href);
-                    List<String> postMatches = RE.search(postPattern, href);
+                    List<String> boardMatches = Util.search(boardPattern, href);
+                    List<String> threadMatches = Util.search(
+                        threadPattern, href
+                    );
+                    List<String> postMatches = Util.search(postPattern, href);
 
                     String boardID = null;
                     long postID = 0;

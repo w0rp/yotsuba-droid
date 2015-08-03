@@ -34,7 +34,7 @@ implements ImageWorker.OnImageReceivedListener {
             return;
         }
 
-        @NonNull ChanFile file = Coerce.notnull(post.getFile());
+        ChanFile file = Coerce.notnull(post.getFile());
 
         if (file.isDeleted()) {
             // Use the filedeleted image when files have been deleted.
@@ -52,7 +52,7 @@ implements ImageWorker.OnImageReceivedListener {
         final long id = post.getPostNumber();
         final String filename = file.getSmallName();
 
-        @Nullable Bitmap bitmap = Yot.loadImage(filename);
+        Bitmap bitmap = Yot.loadImage(filename);
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
@@ -70,7 +70,7 @@ implements ImageWorker.OnImageReceivedListener {
         // ImageView in the map. We'll load it in later.
         imageMap.put(id, imageView);
 
-        final @NonNull URI url = Coerce.notnull(post.getSmallFileURL());
+        final URI url = Coerce.notnull(post.getSmallFileURL());
 
         ImageWorker worker = new ImageWorker(id, url, filename);
         worker.setOnImageReceivedListener(this);

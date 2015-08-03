@@ -3,8 +3,6 @@ package com.w0rp.yotsubadroid;
 import java.util.regex.Pattern;
 
 import com.w0rp.androidutils.Coerce;
-import com.w0rp.androidutils.RE;
-import com.w0rp.androidutils.RE.MatchList;
 
 import android.os.Bundle;
 import android.app.Activity;
