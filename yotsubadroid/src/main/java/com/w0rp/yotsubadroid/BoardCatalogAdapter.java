@@ -51,7 +51,7 @@ public class BoardCatalogAdapter extends PostListAdapter {
             }
         });
 
-        @Nullable final ImageView imageView = (ImageView) item
+        final ImageView imageView = (ImageView) item
             .findViewById(R.id.catalog_item_image);
 
         if (imageView != null) {
@@ -59,7 +59,7 @@ public class BoardCatalogAdapter extends PostListAdapter {
             imageView.setImageDrawable(null);
         }
 
-        @Nullable final TextView txtSubject = (TextView) item
+        final TextView txtSubject = (TextView) item
             .findViewById(R.id.catalog_item_subject);
 
         if (txtSubject != null) {
@@ -69,7 +69,7 @@ public class BoardCatalogAdapter extends PostListAdapter {
             );
         }
 
-        @Nullable TextView txtComment = (TextView) item
+        TextView txtComment = (TextView) item
             .findViewById(R.id.catalog_item_comment);
 
         if (txtComment != null) {

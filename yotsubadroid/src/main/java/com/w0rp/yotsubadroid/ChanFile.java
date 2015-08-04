@@ -23,16 +23,16 @@ public class ChanFile {
     public static ChanFile fromChanJSON(JSONObject obj) throws JSONException {
         ChanFile file = new ChanFile();
 
-        file.setPrename(JSON.getString(obj, "tim"));
-        file.setOrigPrename(JSON.getString(obj, "filename"));
-        file.setExtension(JSON.getString(obj, "ext"));
+        file.setPrename(obj.getString("tim"));
+        file.setOrigPrename(obj.getString("filename"));
+        file.setExtension(obj.getString("ext"));
         file.setSpoiler(obj.optInt("spoiler") == 1);
         file.setDeleted(obj.optInt("filedeleted") == 1);
         file.setWidth(obj.optInt("w"));
         file.setHeight(obj.optInt("h"));
         file.setSmallWidth(obj.optInt("tn_w"));
         file.setSmallHeight(obj.optInt("tn_h"));
-        file.setMD5(JSON.optString(obj, "md5"));
+        file.setMD5(obj.optString("md5"));
         file.setSize(obj.optInt("fsize"));
 
         return file;
@@ -41,16 +41,16 @@ public class ChanFile {
     public static ChanFile fromJSON(JSONObject obj) {
         ChanFile file = new ChanFile();
 
-        file.setPrename(JSON.optString(obj, "prename"));
-        file.setOrigPrename(JSON.optString(obj, "origPrename"));
-        file.setExtension(JSON.optString(obj, "extension"));
+        file.setPrename(obj.optString("prename"));
+        file.setOrigPrename(obj.optString("origPrename"));
+        file.setExtension(obj.optString("extension"));
         file.setSpoiler(obj.optBoolean("spoiler"));
         file.setDeleted(obj.optBoolean("deleted"));
         file.setWidth(obj.optInt("width"));
         file.setHeight(obj.optInt("height"));
         file.setSmallWidth(obj.optInt("smallWidth"));
         file.setSmallHeight(obj.optInt("smallHeight"));
-        file.setMD5(JSON.optString(obj, "md5"));
+        file.setMD5(obj.optString("md5"));
         file.setSize(obj.optInt("size"));
 
         return file;

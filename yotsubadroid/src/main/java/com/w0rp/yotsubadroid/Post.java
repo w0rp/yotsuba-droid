@@ -7,8 +7,6 @@ import java.util.Date;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.JSON;
-
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -51,14 +49,14 @@ public class Post {
         post.setTime(obj.optLong("time"));
         post.setPostNumber(obj.optLong("no"));
         post.setReplyTo(obj.optLong("resto"));
-        post.setPosterName(JSON.optString(obj, "name"));
-        post.setEmail(JSON.optString(obj, "email"));
-        post.setSubject(JSON.optString(obj, "sub"));
-        post.setComment(JSON.optString(obj, "com"));
-        post.setTripcode(JSON.optString(obj, "trip"));
-        post.setPosterID(JSON.optString(obj, "id"));
-        post.setCapcode(JSON.optString(obj, "capcode"));
-        post.setCountryCode(JSON.optString(obj, "country"));
+        post.setPosterName(obj.optString("name"));
+        post.setEmail(obj.optString("email"));
+        post.setSubject(obj.optString("sub"));
+        post.setComment(obj.optString("com"));
+        post.setTripcode(obj.optString("trip"));
+        post.setPosterID(obj.optString("id"));
+        post.setCapcode(obj.optString("capcode"));
+        post.setCountryCode(obj.optString("country"));
 
         if (post.isThread()) {
             post.setCustomSpoiler(obj.optInt("custom_spoiler"));
@@ -74,7 +72,7 @@ public class Post {
     public static Post fromJSON(JSONObject obj) {
         JSONObject fileObj = obj.optJSONObject("file");
 
-        Post post = new Post(JSON.optString(obj, "boardID"));
+        Post post = new Post(obj.optString("boardID"));
 
         if (fileObj != null) {
             post.setFile(ChanFile.fromJSON(fileObj));
@@ -83,14 +81,14 @@ public class Post {
         post.setTime(obj.optLong("time"));
         post.setPostNumber(obj.optLong("postNumber"));
         post.setReplyTo(obj.optLong("replyTo"));
-        post.setPosterName(JSON.optString(obj, "posterName"));
-        post.setEmail(JSON.optString(obj, "email"));
-        post.setSubject(JSON.optString(obj, "subject"));
-        post.setComment(JSON.optString(obj, "comment"));
-        post.setTripcode(JSON.optString(obj, "tripcode"));
-        post.setPosterID(JSON.optString(obj, "posterID"));
-        post.setCapcode(JSON.optString(obj, "capcode"));
-        post.setCountryCode(JSON.optString(obj, "countryCode"));
+        post.setPosterName(obj.optString("posterName"));
+        post.setEmail(obj.optString("email"));
+        post.setSubject(obj.optString("subject"));
+        post.setComment(obj.optString("comment"));
+        post.setTripcode(obj.optString("tripcode"));
+        post.setPosterID(obj.optString("posterID"));
+        post.setCapcode(obj.optString("capcode"));
+        post.setCountryCode(obj.optString("countryCode"));
 
         if (post.isThread()) {
             post.setCustomSpoiler(obj.optInt("customSpoiler"));

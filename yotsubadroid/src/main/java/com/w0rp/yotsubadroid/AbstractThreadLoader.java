@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.NetworkLoader;
 
 public abstract class AbstractThreadLoader extends NetworkLoader<List<Post>> {

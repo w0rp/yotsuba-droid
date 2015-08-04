@@ -1,13 +1,13 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.w0rp.androidutils.Async;
-import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.Net;
 import com.w0rp.androidutils.SingleHTTPRequestTask;
 import com.w0rp.yotsubadroid.R;
@@ -73,7 +73,7 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
     private @Nullable ArrayAdapter<String> boardAdapter;
     private @Nullable BoardListReceiver boardListReceiver;
-    private List<Board> currentBoardList = Coerce.emptyList();
+    private List<Board> currentBoardList = Collections.emptyList();
 
     private void populateBoardList() {
         final ArrayAdapter<String> checkedAdapter = boardAdapter;

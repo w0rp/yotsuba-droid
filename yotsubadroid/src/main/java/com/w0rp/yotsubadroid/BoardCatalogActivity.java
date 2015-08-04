@@ -1,5 +1,6 @@
 package com.w0rp.yotsubadroid;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 public class BoardCatalogActivity extends Activity {
-    private static Pattern boardPattern = RE.compile(
+    private static Pattern boardPattern = Pattern.compile(
         "/([a-zA-Z0-9_]+)/?(?:catalog)?$"
     );
 
@@ -28,7 +29,7 @@ public class BoardCatalogActivity extends Activity {
         String boardID = null;
 
         if (getIntent().getData() != null) {
-            MatchList matches = RE.search(
+            List<String> matches = Util.search(
                 boardPattern,
                 getIntent().getDataString()
             );
@@ -76,7 +77,7 @@ public class BoardCatalogActivity extends Activity {
 
         switch (item.getItemId()) {
         case R.id.menu_refresh:
-            @Nullable final BoardCatalogFragment fragment =
+            final BoardCatalogFragment fragment =
                 findCatalogFragment();
 
             if (fragment != null) {

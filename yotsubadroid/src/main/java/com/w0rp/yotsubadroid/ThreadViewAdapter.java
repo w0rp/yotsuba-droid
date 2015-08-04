@@ -118,14 +118,14 @@ public class ThreadViewAdapter extends PostListAdapter {
     @Override
     public View getView(int position,
     @Nullable View convertView, @Nullable ViewGroup parent) {
-        @NonNull View item;
+        View item;
 
         if (convertView == null) {
             assert parent != null;
 
             LayoutInflater inf = LayoutInflater.from(parent.getContext());
 
-            @Nullable View inflatedView = inf.inflate(
+            View inflatedView = inf.inflate(
                 R.layout.thread_post, parent, false
             );
 

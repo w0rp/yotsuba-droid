@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import com.w0rp.androidutils.FileRotator;
 import com.w0rp.androidutils.IO;
-import com.w0rp.androidutils.JSON;
 import com.w0rp.androidutils.SLog;
 
 import android.app.Application;

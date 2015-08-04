@@ -17,11 +17,9 @@ public class Board {
      * @return A new board object.
      */
     public static Board fromChanJSON(@NonNull JSONObject obj) {
-        Board board = new Board(
-            JSON.optString(obj, "board")
-        );
+        Board board = new Board(obj.optString("board"));
 
-        board.setTitle(JSON.optString(obj, "title"));
+        board.setTitle(obj.optString("title"));
         board.setWorksafe(obj.optInt("ws_board") == 1);
         board.setPostsPerPage(obj.optInt("per_page"));
         board.setPageCount(obj.optInt("pages"));
@@ -36,9 +34,9 @@ public class Board {
      * @return A new board object.
      */
     public static Board fromJSON(JSONObject obj) {
-        Board board = new Board(JSON.optString(obj, "id"));
+        Board board = new Board(obj.optString("id"));
 
-        board.setTitle(JSON.optString(obj, "title"));
+        board.setTitle(obj.optString("title"));
         board.setWorksafe(obj.optBoolean("worksafe", false));
         board.setPostsPerPage(obj.optInt("postsPerPage", 0));
         board.setPageCount(obj.optInt("pageCount", 0));
@@ -54,7 +52,7 @@ public class Board {
 
     @SuppressLint("DefaultLocale")
     public Board(String id) {
-        this.id = Coerce.notnull(id.toLowerCase());
+        this.id = id.toLowerCase();
     }
 
     public JSONObject toJSON() {
