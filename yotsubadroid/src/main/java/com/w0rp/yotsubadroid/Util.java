@@ -28,9 +28,9 @@ public abstract class Util {
         }
     }
 
-    static abstract class JSONArrayIterator<T> implements Iterator<T> {
-        protected JSONArray array;
-        protected int index = 0;
+    private static abstract class JSONArrayIterator<T> implements Iterator<T> {
+        JSONArray array;
+        int index = 0;
 
         @Override
         public final void remove() {
@@ -67,7 +67,7 @@ public abstract class Util {
      * @return An Iterable through the objects in the array.
      */
     public static Iterable<JSONObject> jsonObjects(@NonNull JSONArray array) {
-        Iterator<JSONObject> iterator = new JSONArrayJOIterator();
+        JSONArrayJOIterator iterator = new JSONArrayJOIterator();
         iterator.array = array;
 
         return iter(iterator);

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +22,17 @@ implements ImageWorker.OnImageReceivedListener {
     private final Map<Long, ImageView> imageMap;
 
     public PostListAdapter() {
-        pool = Util.pool(32, 5, TimeUnit.SECONDS);
+        int maxSize = 32;
+        int wait = 5;
+
+        pool = new ThreadPoolExecutor(
+            maxSize,
+            maxSize,
+            wait,
+            TimeUnit.SECONDS,
+            new LinkedBlockingDeque<Runnable>()
+        );
+
         imageMap = new HashMap<Long, ImageView>();
     }
 
