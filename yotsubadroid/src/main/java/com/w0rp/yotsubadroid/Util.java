@@ -2,6 +2,8 @@ package com.w0rp.yotsubadroid;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,8 +29,8 @@ public abstract class Util {
     }
 
     static abstract class JSONArrayIterator<T> implements Iterator<T> {
-        private JSONArray array;
-        private int index = 0;
+        protected JSONArray array;
+        protected int index = 0;
 
         @Override
         public final void remove() {
@@ -116,5 +118,21 @@ public abstract class Util {
         @NonNull CharSequence text
     ) {
        return Util.collect(pattern.matcher(text));
+    }
+
+
+    /**
+     * Show some text in a TextView if the text is non-empty.
+     * Otherwise, hide the TextView.
+     */
+    public static void textOrHide(@NonNull TextView textView, @Nullable String
+    text) {
+        if (text == null || text.length() == 0) {
+            textView.setVisibility(View.GONE);
+            textView.setText("");
+        } else {
+            textView.setVisibility(View.VISIBLE);
+            textView.setText(text);
+        }
     }
 }
