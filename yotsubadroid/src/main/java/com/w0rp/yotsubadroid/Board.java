@@ -7,8 +7,6 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.JSON;
-
 public class Board {
     /**
      * Create a board object from JSON taken from 4chan.

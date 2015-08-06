@@ -1,7 +1,5 @@
 package com.w0rp.yotsubadroid;
 
-import com.w0rp.androidutils.Util;
-
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;

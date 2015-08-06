@@ -16,15 +16,13 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.w0rp.androidutils.SLog;
-import com.w0rp.androidutils.SpanBuilder;
-
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -401,7 +399,7 @@ public class ChanHTML {
             // Pass in the XML to parse.
             reader.parse(new InputSource(new StringReader(xmlify(html))));
         } catch (Exception e) {
-            SLog.e(e);
+            Log.e(ChanHTML.class.getName(), e.toString());
         }
 
         return handler.contentList;

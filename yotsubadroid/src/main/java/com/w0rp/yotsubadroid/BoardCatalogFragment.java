@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.w0rp.androidutils.NetworkFailure;
-
 public final class BoardCatalogFragment extends Fragment
 implements BoardCatalogAdapter.OnThreadSelectedListener {
     public final class CatalogLoader extends AbstractCatalogLoader {

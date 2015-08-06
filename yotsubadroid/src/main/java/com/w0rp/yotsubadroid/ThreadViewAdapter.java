@@ -1,7 +1,5 @@
 package com.w0rp.yotsubadroid;
 
-import com.w0rp.androidutils.SpanBuilder;
-import com.w0rp.androidutils.Util;
 import com.w0rp.yotsubadroid.ChanHTML.QuotelinkClickHandler;
 import com.w0rp.yotsubadroid.ChanHTML.TextGenerator;
 
@@ -45,7 +43,7 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     private void renderPosterName(View item, Post post) {
-        @Nullable final TextView txtName =
+        final TextView txtName =
             (TextView) item.findViewById(R.id.post_poster_name);
 
         if (txtName == null) {
@@ -65,14 +63,14 @@ public class ThreadViewAdapter extends PostListAdapter {
     }
 
     private void renderImage(View item, final Post post) {
-        @Nullable final RelativeLayout imageLayout =
+        final RelativeLayout imageLayout =
             (RelativeLayout) item.findViewById(R.id.post_image_layout);
 
         if (imageLayout == null) {
             return;
         }
 
-        @Nullable final ImageView imageView =
+        final ImageView imageView =
             (ImageView) item.findViewById(R.id.post_image);
 
         if (imageView == null) {

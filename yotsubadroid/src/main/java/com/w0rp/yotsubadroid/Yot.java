@@ -13,10 +13,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.FileRotator;
-import com.w0rp.androidutils.IO;
-import com.w0rp.androidutils.SLog;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,6 +25,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class Yot extends Application {
     public static enum TBACK {
@@ -52,12 +49,12 @@ public class Yot extends Application {
         try {
             boardData = new JSONObject(sharedPrefs.getString("boardData", "{}"));
         } catch (JSONException e) {
-            SLog.e("Parsing boardData JSON failed!");
+            Log.e(Yot.class.getName(), "Parsing boardData JSON failed!");
 
             return;
         }
 
-        for (String board : JSON.keys(boardData)) {
+        for (String board : Util.iter(boardData)) {
             JSONObject obj = boardData.optJSONObject(board);
 
             if (obj == null) {
@@ -193,7 +190,7 @@ public class Yot extends Application {
             IO.stream(in, out);
             IO.close(out);
         } catch (Exception e) {
-            SLog.e(e);
+            Log.e(Yot.class.getName(), e.toString());
             return;
         }
 

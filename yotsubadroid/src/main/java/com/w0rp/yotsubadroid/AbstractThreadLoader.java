@@ -34,7 +34,7 @@ public abstract class AbstractThreadLoader extends NetworkLoader<List<Post>> {
         JSONObject threadObj = new JSONObject(data);
         List<Post> postList = new ArrayList<Post>();
 
-        for (JSONObject postObj : JSON.objIter(threadObj, "posts")) {
+        for (JSONObject postObj : Util.jsonObjects(threadObj, "posts")) {
             // We know for a fact that this is not null.
             JSONObject checkedPostObj = postObj;
 

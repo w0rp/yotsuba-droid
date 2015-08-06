@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.w0rp.androidutils.NetworkFailure;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
 import com.w0rp.yotsubadroid.Yot.TBACK;
 

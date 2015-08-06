@@ -6,8 +6,6 @@ import java.net.URI;
 
 import org.apache.http.client.methods.HttpGet;
 
-import com.w0rp.androidutils.Net;
-
 public class ImageWorker implements Runnable {
     public interface OnImageReceivedListener {
         void onImageReceived(long id, String filename);

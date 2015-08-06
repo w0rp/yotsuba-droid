@@ -7,17 +7,16 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.w0rp.androidutils.Async;
-import com.w0rp.androidutils.Net;
-import com.w0rp.androidutils.SingleHTTPRequestTask;
 import com.w0rp.yotsubadroid.R;
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,8 +53,12 @@ public class BoardActivity extends Activity implements OnItemClickListener {
                 return;
             }
 
-            for (JSONObject boardObj : JSON.objIter(boardJSON, "boards")) {
-                Yot.saveBoard(Board.fromChanJSON(boardObj));
+            try {
+                for (JSONObject boardObj : Util.jsonObjects(boardJSON, "boards")) {
+                    Yot.saveBoard(Board.fromChanJSON(boardObj));
+                }
+            } catch (JSONException e) {
+                Log.e(BoardDownloadTask.class.getName(), e.toString());
             }
 
             sendBroadcast(new Intent(BoardListReceiver.class.getName()));
@@ -103,7 +106,12 @@ public class BoardActivity extends Activity implements OnItemClickListener {
         setContentView(R.layout.activity_main);
 
         boardListReceiver = new BoardListReceiver();
-        Async.registerClass(this, boardListReceiver);
+
+        // TODO: use an event name here, instead of a class name.
+        registerReceiver(
+            boardListReceiver,
+            new IntentFilter(boardListReceiver.getClass().getName())
+        );
 
         ListView boardListView = (ListView) findViewById(R.id.board_list);
         boardListView.setOnItemClickListener(this);

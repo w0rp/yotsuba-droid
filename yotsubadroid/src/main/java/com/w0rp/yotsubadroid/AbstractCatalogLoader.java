@@ -11,9 +11,6 @@ import org.json.JSONObject;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.w0rp.androidutils.NetworkLoader;
-
-
 public abstract class AbstractCatalogLoader extends NetworkLoader<List<Post>> {
     private final String boardID;
 
@@ -33,8 +30,8 @@ public abstract class AbstractCatalogLoader extends NetworkLoader<List<Post>> {
         JSONArray arr = new JSONArray(data);
         List<Post> postList = new ArrayList<Post>();
 
-        for (JSONObject pageObj : JSON.objIter(arr)) {
-            for (JSONObject postObj : JSON.objIter(pageObj, "threads")) {
+        for (JSONObject pageObj : Util.jsonObjects(arr)) {
+            for (JSONObject postObj : Util.jsonObjects(pageObj, "threads")) {
                 // We know for a fact that this is not null.
                 JSONObject checkedPostObj = postObj;
 
