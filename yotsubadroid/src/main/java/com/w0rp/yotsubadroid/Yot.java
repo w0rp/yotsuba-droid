@@ -26,6 +26,11 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.LruCache;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.Volley;
 
 public class Yot extends Application {
     public static enum TBACK {
@@ -37,7 +42,8 @@ public class Yot extends Application {
     public static final String API_URL = "https://a.4cdn.org/";
 
     private static Map<String, Board> boardMap = Collections.emptyMap();
-    private static FileRotator fileRotator = new FileRotator(200 * 1024 * 1024);
+    private static @Nullable RequestQueue requestQueue;
+    private static @Nullable ImageLoader imageLoader;
     private static @Nullable Context context;
     private static @Nullable SharedPreferences prefs;
 
@@ -75,26 +81,6 @@ public class Yot extends Application {
         }
 
         edit.putString("boardData", boardData.toString());
-    }
-
-    private static File cacheSubdir(String dirname) {
-        assert context != null;
-        File cacheDir = context.getExternalCacheDir();
-
-        if (cacheDir == null) {
-            assert context != null;
-            cacheDir = context.getCacheDir();
-        }
-
-        File subDir = new File(cacheDir.getPath() + "/" + dirname);
-        subDir.mkdirs();
-
-        return subDir;
-    }
-
-    private static File cachedFile(String filename) {
-        File dir = cacheSubdir("image");
-        return new File(dir + "/" + filename);
     }
 
     /**
@@ -168,41 +154,16 @@ public class Yot extends Application {
             android.R.drawable.ic_menu_save);
     }
 
-    public static boolean cachedFileExists(String filename) {
-        return cachedFile(filename).exists();
+    public static RequestQueue getRequestQueue() {
+        assert requestQueue != null;
+
+        return requestQueue;
     }
 
-    public static @Nullable Bitmap loadImage(String filename) {
-        File inFile = cachedFile(filename);
+    public static ImageLoader getImageLoader() {
+        assert imageLoader != null;
 
-        if (!inFile.exists()) {
-            return null;
-        }
-
-        return BitmapFactory.decodeFile(inFile.getPath());
-    }
-
-    public static void saveImage(String filename, InputStream in) {
-        File outFile = cachedFile(filename);
-
-        try {
-            FileOutputStream out = new FileOutputStream(outFile.getPath());
-            IO.stream(in, out);
-            IO.close(out);
-        } catch (Exception e) {
-            Log.e(Yot.class.getName(), e.toString());
-            return;
-        }
-
-        fileRotator.add(outFile);
-    }
-
-    public static void deleteAllImages() {
-        File cacheDir = cacheSubdir("image");
-
-        for (String filename : cacheDir.list()) {
-            new File(cacheDir, filename).delete();
-        }
+        return imageLoader;
     }
 
     public static void runOnUiThread(final Runnable runnable) {
@@ -230,7 +191,21 @@ public class Yot extends Application {
             loadBoardMap(prefs);
         }
 
-        // Delete all of the saved images when the application starts.
-        deleteAllImages();
+        requestQueue = Volley.newRequestQueue(this);
+
+        imageLoader = new ImageLoader(requestQueue, new ImageLoader.ImageCache() {
+            private final LruCache<String, Bitmap> cache = new
+                LruCache<String, Bitmap>(10);
+
+            @Override
+            public Bitmap getBitmap(String url) {
+                return cache.get(url);
+            }
+
+            @Override
+            public void putBitmap(String url, Bitmap bitmap) {
+                cache.put(url, bitmap);
+            }
+        });
     }
 }

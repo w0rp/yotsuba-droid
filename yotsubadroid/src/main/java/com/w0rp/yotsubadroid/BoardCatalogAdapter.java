@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
+
 public class BoardCatalogAdapter extends PostListAdapter {
     public interface OnThreadSelectedListener {
         void onThreadSelected(long threadID);
@@ -49,12 +51,11 @@ public class BoardCatalogAdapter extends PostListAdapter {
             }
         });
 
-        final ImageView imageView = (ImageView) item
+        final NetworkImageView imageView = (NetworkImageView) item
             .findViewById(R.id.catalog_item_image);
 
         if (imageView != null) {
-            // null the image right away so we can hide it quickly.
-            imageView.setImageDrawable(null);
+            loadImage(post, imageView);
         }
 
         final TextView txtSubject = (TextView) item
@@ -75,10 +76,6 @@ public class BoardCatalogAdapter extends PostListAdapter {
                 txtComment,
                 ChanHTML.rawText(post.getComment()).trim()
             );
-        }
-
-        if (imageView != null) {
-            loadImage(post, imageView);
         }
 
         return item;

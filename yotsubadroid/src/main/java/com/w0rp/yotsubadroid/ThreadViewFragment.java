@@ -1,6 +1,7 @@
 package com.w0rp.yotsubadroid;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Fragment;
 import android.content.ClipData;
@@ -25,59 +27,74 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.ParseError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.w0rp.yotsubadroid.ThreadViewAdapter.ThreadInteractor;
 import com.w0rp.yotsubadroid.Yot.TBACK;
 
 public final class ThreadViewFragment extends Fragment
 implements ThreadInteractor {
-    public final class ThreadLoader extends AbstractThreadLoader {
-        public ThreadLoader(String boardID, long threadID) {
-            super(boardID, threadID);
-        }
-
+    private final class ThreadListener implements
+        Response.Listener<JSONObject>,
+        Response.ErrorListener
+    {
         @Override
-        protected void onReceiveResult(@Nullable List<Post> postList) {
-            if (postList != null) {
-                if (postList.size() > 0) {
-                    // Use the thread's subject for the action bar title.
-                    String subject = ChanHTML.rawText(
-                        postList.get(0).getSubject()
-                    );
+        public void onResponse(JSONObject response) {
+            getActivity().setProgressBarIndeterminateVisibility(false);
 
-                    getActivity().getActionBar().setTitle(subject);
+            List<Post> postList = new ArrayList<Post>();
+
+            try {
+                for (JSONObject postObj : Util.jsonObjects(response, "posts")) {
+                    // We know for a fact that this is not null.
+                    JSONObject checkedPostObj = postObj;
+
+                    Post post = Post.fromChanJSON(currentBoardID, checkedPostObj);
+                    postList.add(post);
                 }
-
-                postPosMap = new HashMap<Long, Integer>();
-
-                // Save the posts positions for later.
-                for (int i = 0; i < postList.size(); ++i) {
-                    postPosMap.put(postList.get(i).getPostNumber(), i);
-                }
-
-                threadAdapter.setPostList(postList);
-
-                if (!initiallySkipped) {
-                    initiallySkipped = true;
-
-                    if (currentThreadID != currentPostID) {
-                        skipToPost(currentPostID);
-                    }
-                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            getActivity().setProgressBarIndeterminateVisibility(false);
+            if (postList.size() > 0) {
+                // Use the thread's subject for the action bar title.
+                String subject = ChanHTML.rawText(
+                    postList.get(0).getSubject()
+                );
+
+                getActivity().getActionBar().setTitle(subject);
+            }
+
+            postPosMap = new HashMap<Long, Integer>();
+
+            // Save the posts positions for later.
+            for (int i = 0; i < postList.size(); ++i) {
+                postPosMap.put(postList.get(i).getPostNumber(), i);
+            }
+
+            threadAdapter.setPostList(postList);
+
+            if (!initiallySkipped) {
+                initiallySkipped = true;
+
+                if (currentThreadID != currentPostID) {
+                    skipToPost(currentPostID);
+                }
+            }
         }
 
         @Override
-        protected void onReceiveFailure(NetworkFailure failure) {
+        public void onErrorResponse(VolleyError error) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
             String failureText = null;
 
-            if (failure.getException() instanceof JSONException) {
+            if (error instanceof ParseError) {
                 failureText = "Error parsing thread, it was probably deleted!";
             } else {
-                switch (failure.getResponseCode()) {
+                switch (error.networkResponse.statusCode) {
                 case 404:
                     failureText = "404: Thread missing!";
                 break;
@@ -91,26 +108,20 @@ implements ThreadInteractor {
             }
 
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
-            .show();
+                .show();
 
             getActivity().finish();
-        }
-
-        @Override
-        protected void useLastResult() {
-            // Just stop, we don't need to re-render.
-            getActivity().setProgressBarIndeterminateVisibility(false);
         }
     }
 
     private final ThreadViewAdapter threadAdapter;
+    private final ThreadListener threadListener = new ThreadListener();
     private @Nullable String currentBoardID;
     private long currentThreadID = 0;
     private long currentPostID = 0;
     private boolean initiallySkipped = false;
     private Map<Long, Integer> postPosMap = Collections.emptyMap();
     private Stack<Long> postHistory = new Stack<Long>();
-    private @Nullable ThreadLoader threadLoader;
     private @Nullable ListView postListView;
 
     public ThreadViewFragment() {
@@ -118,15 +129,15 @@ implements ThreadInteractor {
     }
 
     public void updateThread() {
-        if (threadLoader == null) {
-            return;
-        }
-
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        if (threadLoader != null) {
-            threadLoader.execute();
-        }
+        new JsonObjectRequest(
+            Yot.API_URL + Uri.encode(currentBoardID) + "/res/"
+                + Long.toString(currentThreadID) + ".json",
+            null,
+            threadListener,
+            threadListener
+        );
     }
 
     private void openThread(String otherBoardID, long threadID, long postID) {
@@ -205,8 +216,6 @@ implements ThreadInteractor {
         this.currentBoardID = boardID;
         this.currentThreadID = threadID;
         this.currentPostID = postID;
-
-        threadLoader = new ThreadLoader(boardID, threadID);
 
         updateThread();
     }

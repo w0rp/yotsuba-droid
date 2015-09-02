@@ -7,6 +7,9 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.w0rp.yotsubadroid.R;
 
 import android.content.IntentFilter;
@@ -27,74 +30,48 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class BoardActivity extends Activity implements OnItemClickListener {
-    private static final URI BOARD_JSON_URL = URI.create(
-        Yot.API_URL + "boards.json"
-    );
-
-    private class BoardDownloadTask extends SingleHTTPRequestTask {
+    private final class BoardListener implements Response.Listener<JSONObject>,
+        Response.ErrorListener {
         @Override
-        protected void onPostExecute(@Nullable String result) {
-            super.onPostExecute(result);
-
-            if (result == null || result.length() == 0) {
-                // TODO: Notify of failure here somehow.
-
-                setProgressBarIndeterminateVisibility(false);
-
-                return;
-            }
-
-            JSONObject boardJSON = null;
-
-            try {
-                boardJSON = new JSONObject(result);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }
+        public void onResponse(JSONObject boardJSON) {
+            setProgressBarIndeterminateVisibility(false);
 
             try {
                 for (JSONObject boardObj : Util.jsonObjects(boardJSON, "boards")) {
                     Yot.saveBoard(Board.fromChanJSON(boardObj));
                 }
             } catch (JSONException e) {
-                Log.e(BoardDownloadTask.class.getName(), e.toString());
+                Log.e(BoardActivity.class.getName(), e.toString());
             }
 
-            sendBroadcast(new Intent(BoardListReceiver.class.getName()));
-        }
-    }
-
-    private class BoardListReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(
-        @Nullable Context context, @Nullable Intent intent) {
-            setProgressBarIndeterminateVisibility(false);
             populateBoardList();
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            setProgressBarIndeterminateVisibility(false);
         }
     }
 
     private @Nullable ArrayAdapter<String> boardAdapter;
-    private @Nullable BoardListReceiver boardListReceiver;
+    private final BoardListener boardListener = new BoardListener();
     private List<Board> currentBoardList = Collections.emptyList();
 
     private void populateBoardList() {
-        final ArrayAdapter<String> checkedAdapter = boardAdapter;
-
-        if (checkedAdapter == null) {
+        if (boardAdapter == null) {
             return;
         }
 
-        checkedAdapter.setNotifyOnChange(false);
-        checkedAdapter.clear();
+        boardAdapter.setNotifyOnChange(false);
+        boardAdapter.clear();
 
         currentBoardList = Yot.visibleBoardList();
 
         for (Board board : currentBoardList) {
-            checkedAdapter.add("/" + board.getID() + "/ - " + board.getTitle());
+            boardAdapter.add("/" + board.getID() + "/ - " + board.getTitle());
         }
 
-        checkedAdapter.notifyDataSetChanged();
+        boardAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -105,14 +82,6 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
         setContentView(R.layout.activity_main);
 
-        boardListReceiver = new BoardListReceiver();
-
-        // TODO: use an event name here, instead of a class name.
-        registerReceiver(
-            boardListReceiver,
-            new IntentFilter(boardListReceiver.getClass().getName())
-        );
-
         ListView boardListView = (ListView) findViewById(R.id.board_list);
         boardListView.setOnItemClickListener(this);
         boardAdapter = new ArrayAdapter<String>(this,
@@ -121,7 +90,12 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
         setProgressBarIndeterminateVisibility(true);
 
-        new BoardDownloadTask().execute(Net.prepareGet(BOARD_JSON_URL));
+        new JsonObjectRequest(
+            Yot.API_URL + "boards.json",
+            null,
+            boardListener,
+            boardListener
+        );
     }
 
     @Override
@@ -136,13 +110,6 @@ public class BoardActivity extends Activity implements OnItemClickListener {
         super.onPause();
 
         Yot.save();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        unregisterReceiver(boardListReceiver);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.w0rp.yotsubadroid;
 
+import com.android.volley.toolbox.NetworkImageView;
 import com.w0rp.yotsubadroid.ChanHTML.QuotelinkClickHandler;
 import com.w0rp.yotsubadroid.ChanHTML.TextGenerator;
 
@@ -70,8 +71,8 @@ public class ThreadViewAdapter extends PostListAdapter {
             return;
         }
 
-        final ImageView imageView =
-            (ImageView) item.findViewById(R.id.post_image);
+        final NetworkImageView imageView = (NetworkImageView) item
+            .findViewById(R.id.catalog_item_image);
 
         if (imageView == null) {
             return;

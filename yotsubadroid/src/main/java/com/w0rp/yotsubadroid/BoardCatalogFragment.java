@@ -1,11 +1,15 @@
 package com.w0rp.yotsubadroid;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -14,33 +18,51 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.android.volley.ParseError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+
 public final class BoardCatalogFragment extends Fragment
 implements BoardCatalogAdapter.OnThreadSelectedListener {
-    public final class CatalogLoader extends AbstractCatalogLoader {
-        public CatalogLoader(String boardID) {
-            super(boardID);
-        }
-
+    private final class CatalogListener implements
+        Response.Listener<JSONArray>,
+        Response.ErrorListener
+    {
         @Override
-        protected void onReceiveResult(@Nullable List<Post> postList) {
+        public void onResponse(JSONArray response) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
-            if (postList != null) {
-                // The post list result can be null when the connection fails.
-                catalogAdapter.setPostList(postList);
+            List<Post> postList = new ArrayList<Post>();
+
+            try {
+                for (JSONObject pageObj : Util.jsonObjects(response)) {
+                    for (JSONObject postObj : Util.jsonObjects(pageObj, "threads")) {
+                        // We know for a fact that this is not null.
+                        JSONObject checkedPostObj = postObj;
+
+                        Post post = Post.fromChanJSON(boardID, checkedPostObj);
+                        postList.add(post);
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
+            catalogAdapter.setPostList(postList);
         }
 
         @Override
-        public void onReceiveFailure(NetworkFailure failure) {
+        public void onErrorResponse(VolleyError error) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
             String failureText = null;
 
-            if (failure.getException() instanceof JSONException) {
+            if (error instanceof ParseError) {
                 failureText = "Error parsing board, it may not exist!";
             } else {
-                switch (failure.getResponseCode()) {
+                switch (error.networkResponse.statusCode) {
                 case 404:
                     failureText = "404: Board missing!";
                 break;
@@ -54,21 +76,15 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
             }
 
             Toast.makeText(getActivity(), failureText, Toast.LENGTH_LONG)
-            .show();
+                .show();
 
             getActivity().finish();
-        }
-
-        @Override
-        protected void useLastResult() {
-            // Just stop, we don't need to re-render.
-            getActivity().setProgressBarIndeterminateVisibility(false);
         }
     }
 
     private @Nullable String boardID;
     private final BoardCatalogAdapter catalogAdapter;
-    private @Nullable CatalogLoader catalogLoader;
+    private final CatalogListener catalogListener = new CatalogListener();
 
     public BoardCatalogFragment() {
         catalogAdapter = new BoardCatalogAdapter();
@@ -76,16 +92,13 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     }
 
     public void updateCatalog() {
-        if (catalogLoader == null) {
-            return;
-        }
-
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        // The redundant null check makes Eclipse happy.
-        if (catalogLoader != null) {
-            catalogLoader.execute();
-        }
+        new JsonArrayRequest(
+            Yot.API_URL + Uri.encode(boardID) + "/catalog.json",
+            catalogListener,
+            catalogListener
+        );
     }
 
     @Override
@@ -109,7 +122,6 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
 
     public void setBoardID(String boardID) {
         this.boardID = boardID;
-        catalogLoader = new CatalogLoader(boardID);
 
         updateCatalog();
     }

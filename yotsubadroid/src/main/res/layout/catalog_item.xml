@@ -4,7 +4,7 @@
     android:layout_height="@dimen/catalog_item_height"
     android:padding="4dp" >
 
-    <ImageView
+    <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/catalog_item_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

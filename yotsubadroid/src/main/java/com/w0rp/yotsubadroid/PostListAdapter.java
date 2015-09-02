@@ -15,28 +15,12 @@ import android.support.annotation.Nullable;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-public abstract class PostListAdapter extends BaseAdapter
-implements ImageWorker.OnImageReceivedListener {
+import com.android.volley.toolbox.NetworkImageView;
+
+public abstract class PostListAdapter extends BaseAdapter {
     private List<Post> postList = Collections.emptyList();
-    private final ThreadPoolExecutor pool;
-    private final Map<Long, ImageView> imageMap;
 
-    public PostListAdapter() {
-        int maxSize = 32;
-        int wait = 5;
-
-        pool = new ThreadPoolExecutor(
-            maxSize,
-            maxSize,
-            wait,
-            TimeUnit.SECONDS,
-            new LinkedBlockingDeque<Runnable>()
-        );
-
-        imageMap = new HashMap<Long, ImageView>();
-    }
-
-    protected void loadImage(Post post, ImageView imageView) {
+    protected void loadImage(Post post, NetworkImageView imageView) {
         if (post.getFile() == null) {
             // Blank the image when there's nothing to load.
             imageView.setImageDrawable(null);
@@ -61,42 +45,8 @@ implements ImageWorker.OnImageReceivedListener {
         final long id = post.getPostNumber();
         final String filename = file.getSmallName();
 
-        Bitmap bitmap = Yot.loadImage(filename);
-
-        if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
-            imageMap.remove(id);
-            return;
-        }
-
-        if (imageMap.containsKey(id)) {
-            // Replace the existing ImageView if we're still loading the image.
-            imageMap.put(id, imageView);
-            return;
-        }
-
-        // Start up a request for the image, saving a reference to this
-        // ImageView in the map. We'll load it in later.
-        imageMap.put(id, imageView);
-
-        final URI url = post.getSmallFileURL();
-
-        ImageWorker worker = new ImageWorker(id, url, filename);
-        worker.setOnImageReceivedListener(this);
-        pool.execute(worker);
-    }
-
-    @Override
-    public void onImageReceived(long id, String filename) {
-        ImageView imageView = imageMap.get(id);
-
-        if (imageView == null) {
-            // Nothing to load the image into!
-            return;
-        }
-
-        imageView.setImageBitmap(Yot.loadImage(filename));
-        imageMap.remove(id);
+        // TODO: Use an ImageLoader here.
+        imageView.setImageUrl(post.getSmallFileURL().toString(), Yot.getImageLoader());
     }
 
     @Override
