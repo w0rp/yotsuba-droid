@@ -2,18 +2,8 @@ package com.w0rp.yotsubadroid;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
 import com.android.volley.toolbox.NetworkImageView;
 
@@ -42,11 +32,12 @@ public abstract class PostListAdapter extends BaseAdapter {
             imageView.setImageDrawable(null);
         }
 
-        final long id = post.getPostNumber();
-        final String filename = file.getSmallName();
+        final URI fileURL = post.getSmallFileURL();
 
-        // TODO: Use an ImageLoader here.
-        imageView.setImageUrl(post.getSmallFileURL().toString(), Yot.getImageLoader());
+        if (fileURL != null) {
+            // TODO: Use an ImageLoader here.
+            imageView.setImageUrl(fileURL.toString(), Yot.getImageLoader());
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.w0rp.yotsubadroid;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.annotation.Nullable;
@@ -12,7 +13,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 public class BoardCatalogActivity extends Activity {
-    private static Pattern boardPattern = Pattern.compile(
+    private static final Pattern boardPattern = Pattern.compile(
         "/([a-zA-Z0-9_]+)/?(?:catalog)?$"
     );
 
@@ -44,8 +45,15 @@ public class BoardCatalogActivity extends Activity {
         Board board = Yot.boardByID(boardID);
 
         if (board != null) {
-            getActionBar().setTitle(board.getTitle());
-            fragment.setBoardID(board.getID());
+            ActionBar actionBar = getActionBar();
+
+            if (actionBar != null) {
+                actionBar.setTitle(board.getTitle());
+            }
+
+            if (fragment != null) {
+                fragment.setBoardID(board.getID());
+            }
         } else {
             Toast.makeText(this, "Unknown board ID!", Toast.LENGTH_LONG)
             .show();
@@ -55,11 +63,6 @@ public class BoardCatalogActivity extends Activity {
     private @Nullable BoardCatalogFragment findCatalogFragment() {
         return (BoardCatalogFragment) getFragmentManager()
             .findFragmentById(R.id.board_catalog_fragment);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override

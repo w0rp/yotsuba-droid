@@ -55,11 +55,12 @@ public abstract class IO {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
 
-        String line = null;
+        String line;
 
         try {
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line);
+                sb.append('\n');
             }
         } finally {
             IO.close(is);
@@ -77,7 +78,7 @@ public abstract class IO {
         if (obj != null) {
             try {
                 obj.close();
-            } catch (Exception e) { }
+            } catch (Exception ignored) { }
         }
     }
 }

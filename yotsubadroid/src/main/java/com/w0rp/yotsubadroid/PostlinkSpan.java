@@ -5,13 +5,13 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 public class PostlinkSpan extends ClickableSpan {
-    public static interface OnPostLinkClickListener {
-        public void onPostLinkClick(@Nullable View view, String boardID, String postID);
+    public interface OnPostLinkClickListener {
+        void onPostLinkClick(@Nullable View view, String boardID, String postID);
     }
 
     private @Nullable OnPostLinkClickListener listener;
-    private String boardID;
-    private String postID;
+    private final String boardID;
+    private final String postID;
 
     public PostlinkSpan(String boardID, String postID) {
         this.boardID = boardID;

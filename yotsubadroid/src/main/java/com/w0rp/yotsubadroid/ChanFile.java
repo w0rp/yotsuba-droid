@@ -69,7 +69,7 @@ public class ChanFile {
             obj.put("smallHeight", smallHeight);
             obj.put("md5", md5);
             obj.put("size", size);
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
 
         return obj;

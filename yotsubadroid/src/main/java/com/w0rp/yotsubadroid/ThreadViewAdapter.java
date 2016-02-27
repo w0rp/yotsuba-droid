@@ -10,14 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ThreadViewAdapter extends PostListAdapter {
-    public static interface ThreadInteractor extends QuotelinkClickHandler {
-        public void onImageClick(Post post);
-        public void onTextCopy(Post post);
+    public interface ThreadInteractor extends QuotelinkClickHandler {
+        void onImageClick(Post post);
+        void onTextCopy(Post post);
     }
 
     private final ThreadInteractor interactor;
@@ -83,11 +82,7 @@ public class ThreadViewAdapter extends PostListAdapter {
             imageLayout.setVisibility(View.VISIBLE);
             loadImage(post, imageView);
 
-            imageView.setOnClickListener(new OnClickListener() {
-                @Override public void onClick(@Nullable View v) {
-                    interactor.onImageClick(post);
-                }
-            });
+            imageView.setOnClickListener(x -> interactor.onImageClick(post));
         } else {
             // Hide layouts which do not have an image.
             imageLayout.setVisibility(View.GONE);

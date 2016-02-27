@@ -1,11 +1,7 @@
 package com.w0rp.yotsubadroid;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +14,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,7 +26,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 public class Yot extends Application {
-    public static enum TBACK {
+    public enum TBACK {
         ALWAYS,
         SOMETIMES,
         NEVER
@@ -50,7 +43,7 @@ public class Yot extends Application {
     private static void loadBoardMap(SharedPreferences sharedPrefs) {
         boardMap = new HashMap<String, Board>();
 
-        JSONObject boardData = null;
+        JSONObject boardData;
 
         try {
             boardData = new JSONObject(sharedPrefs.getString("boardData", "{}"));
@@ -77,7 +70,7 @@ public class Yot extends Application {
         for (Board board : boardMap.values()) {
             try {
                 boardData.put(board.getID(), board.toJSON());
-            } catch (JSONException e) { }
+            } catch (JSONException ignored) { }
         }
 
         edit.putString("boardData", boardData.toString());
@@ -93,7 +86,7 @@ public class Yot extends Application {
 
         saveBoardMap(edit);
 
-        edit.commit();
+        edit.apply();
     }
 
     /**
@@ -137,11 +130,8 @@ public class Yot extends Application {
         }
 
         // Sort the boards by their short names.
-        Collections.sort(list, new Comparator<Board>() {
-            @Override
-            public int compare(Board lhs, Board rhs) {
-                return lhs.getID().compareTo(rhs.getID());
-            }
+        Collections.sort(list, (lhs, rhs) ->{
+            return lhs.getID().compareTo(rhs.getID());
         });
 
         return list;
@@ -150,8 +140,15 @@ public class Yot extends Application {
     public static @NonNull Drawable defaultCatImage() {
         assert context != null;
 
-        return context.getResources().getDrawable(
-            android.R.drawable.ic_menu_save);
+        Drawable image = context.getResources().getDrawable(
+            android.R.drawable.ic_menu_save
+        );
+
+        if (image == null) {
+            throw new NullPointerException();
+        }
+
+        return image;
     }
 
     public static RequestQueue getRequestQueue() {
@@ -164,20 +161,6 @@ public class Yot extends Application {
         assert imageLoader != null;
 
         return imageLoader;
-    }
-
-    public static void runOnUiThread(final Runnable runnable) {
-        assert context != null;
-
-        @SuppressWarnings("null")
-        Handler handler = new Handler(context.getMainLooper()) {
-            @Override
-            public void handleMessage(@Nullable Message msg) {
-                runnable.run();
-            }
-        };
-
-        handler.sendEmptyMessage(0);
     }
 
     @Override

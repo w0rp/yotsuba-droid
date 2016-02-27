@@ -43,7 +43,7 @@ public class Post {
         if (obj.optString("filename").length() > 0) {
             try {
                 post.setFile(ChanFile.fromChanJSON(obj));
-            } catch (JSONException e) { }
+            } catch (JSONException ignored) { }
         }
 
         post.setTime(obj.optLong("time"));
@@ -129,7 +129,7 @@ public class Post {
                 obj.put("bumpLimitHit", bumpLimitHit);
                 obj.put("imageLimitHit", imageLimitHit);
             }
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
 
         return obj;
@@ -153,7 +153,7 @@ public class Post {
         return file;
     }
 
-    protected void setFile(ChanFile file) {
+    protected void setFile(@Nullable ChanFile file) {
         this.file = file;
     }
 
@@ -308,17 +308,14 @@ public class Post {
      */
     public @Nullable URI getSmallFileURL() {
         if (file != null && !file.isDeleted()) {
-            // We have to put this check in to make Eclipse happy.
-            if (file != null) {
-                String smallName = file.getSmallName();
+            String smallName = file.getSmallName();
 
-                return URI.create(
-                    "https://thumbs.4chan.org/"
-                    + Uri.encode(boardID)
-                    + "/thumb/"
-                    + smallName
-                );
-            }
+            return URI.create(
+                "https://thumbs.4chan.org/"
+                + Uri.encode(boardID)
+                + "/thumb/"
+                + smallName
+            );
         }
 
         return null;
@@ -329,17 +326,14 @@ public class Post {
      */
     public @Nullable URI getFileURL() {
         if (file != null && !file.isDeleted()) {
-            // We have to put this check in to make Eclipse happy.
-            if (file != null) {
-                String name = file.getName();
+            String name = file.getName();
 
-                return URI.create(
-                    "https://images.4chan.org/"
-                    + Uri.encode(boardID)
-                    + "/src/"
-                    + name
-                );
-            }
+            return URI.create(
+                "https://images.4chan.org/"
+                + Uri.encode(boardID)
+                + "/src/"
+                + name
+            );
         }
 
         return null;

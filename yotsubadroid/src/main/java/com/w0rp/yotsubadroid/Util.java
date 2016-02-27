@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 public abstract class Util {
     public static class IteratorIterable<T> implements Iterable<T> {
-        Iterator<T> iterator;
+        final Iterator<T> iterator;
 
         public IteratorIterable(@NonNull Iterator<T> iterator) {
             this.iterator = iterator;
@@ -56,7 +56,7 @@ public abstract class Util {
     }
 
     public static Iterable<String> iter(@NonNull JSONObject obj) {
-        return new IteratorIterable<String>((Iterator<String>) obj.keys());
+        return new IteratorIterable<String>(obj.keys());
     }
 
     /**
@@ -134,5 +134,25 @@ public abstract class Util {
             textView.setVisibility(View.VISIBLE);
             textView.setText(text);
         }
+    }
+
+    /**
+     * Given any object, test if it is null, and immediately throw
+     * a NullPointerException if it is null.
+     *
+     * This method can be used to make code complain about the source of
+     * null references earlier, rather the later.
+     *
+     * @param possiblyNull Any object.
+     * @throws NullPointerException Thrown if the object is null.
+     * @return The object provided.
+     */
+    public static <T> T assumeNotNull(@Nullable T possiblyNull)
+    throws NullPointerException {
+        if (possiblyNull == null) {
+            throw new NullPointerException();
+        }
+
+        return possiblyNull;
     }
 }

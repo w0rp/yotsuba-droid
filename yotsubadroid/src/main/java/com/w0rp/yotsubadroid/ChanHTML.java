@@ -27,7 +27,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class ChanHTML {
-    private static enum ContentType {
+    private enum ContentType {
         UNKNOWN,
         PLAIN,
         SPOILER,
@@ -103,14 +103,14 @@ public class ChanHTML {
     }
 
     private static class TagHandler extends DefaultHandler {
-        private static Pattern boardPattern =
+        private static final Pattern boardPattern =
             Pattern.compile("^/([a-zA-Z0-9_]+)");
-        private static Pattern threadPattern =
+        private static final Pattern threadPattern =
             Pattern.compile("/(\\d+)#p");
-        private static Pattern postPattern =
+        private static final Pattern postPattern =
             Pattern.compile("#p(\\d+)$");
 
-        List<Content> contentList;
+        final List<Content> contentList;
         ContentType state = ContentType.PLAIN;
         @Nullable Content.LinkMatch currentLinkMatch;
 
@@ -198,6 +198,10 @@ public class ChanHTML {
         @Override
         public void characters(
         @Nullable char[] charList, int start, int length) {
+            if (charList == null) {
+                return;
+            }
+
             String content = new String(charList, start, length);
 
             if (content.length() == 0) {
@@ -209,11 +213,11 @@ public class ChanHTML {
     }
 
     public interface QuotelinkClickHandler {
-        public void onQuotelinkClick(Post post, @Nullable String boardID, long threadID,
+        void onQuotelinkClick(Post post, @Nullable String boardID, long threadID,
             long postID);
     }
 
-    private static QuotelinkClickHandler NULL_QUOTE_HANDLER =
+    private static final QuotelinkClickHandler NULL_QUOTE_HANDLER =
     new QuotelinkClickHandler() {
         @Override
         public void onQuotelinkClick(Post post, @Nullable String boardID, long threadID,
@@ -240,12 +244,8 @@ public class ChanHTML {
             }
 
             @Override
-            public void updateDrawState(@Nullable TextPaint ds) {
+            public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
-
-                if (ds == null) {
-                    return;
-                }
 
                 ds.setUnderlineText(false);
 
@@ -279,12 +279,10 @@ public class ChanHTML {
             }
 
             @Override
-            public void updateDrawState(@Nullable TextPaint ds) {
+            public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
 
-                if (ds != null) {
-                    ds.setColor(QUOTELINK_COLOR);
-                }
+                ds.setColor(QUOTELINK_COLOR);
             }
         }
 

@@ -2,7 +2,6 @@ package com.w0rp.yotsubadroid;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import java.util.Stack;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -48,10 +48,7 @@ implements ThreadInteractor {
 
             try {
                 for (JSONObject postObj : Util.jsonObjects(response, "posts")) {
-                    // We know for a fact that this is not null.
-                    JSONObject checkedPostObj = postObj;
-
-                    Post post = Post.fromChanJSON(currentBoardID, checkedPostObj);
+                    Post post = Post.fromChanJSON(currentBoardID, postObj);
                     postList.add(post);
                 }
             } catch (JSONException e) {
@@ -64,7 +61,11 @@ implements ThreadInteractor {
                     postList.get(0).getSubject()
                 );
 
-                getActivity().getActionBar().setTitle(subject);
+                ActionBar actionBar = getActivity().getActionBar();
+
+                if (actionBar != null) {
+                    actionBar.setTitle(subject);
+                }
             }
 
             postPosMap = new HashMap<Long, Integer>();
@@ -89,7 +90,7 @@ implements ThreadInteractor {
         public void onErrorResponse(VolleyError error) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
-            String failureText = null;
+            String failureText;
 
             if (error instanceof ParseError) {
                 failureText = "Error parsing thread, it was probably deleted!";
@@ -121,7 +122,7 @@ implements ThreadInteractor {
     private long currentPostID = 0;
     private boolean initiallySkipped = false;
     private Map<Long, Integer> postPosMap = Collections.emptyMap();
-    private Stack<Long> postHistory = new Stack<Long>();
+    private final Stack<Long> postHistory = new Stack<Long>();
     private @Nullable ListView postListView;
 
     public ThreadViewFragment() {

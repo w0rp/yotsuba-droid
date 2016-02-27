@@ -22,7 +22,6 @@ import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 public final class BoardCatalogFragment extends Fragment
 implements BoardCatalogAdapter.OnThreadSelectedListener {
@@ -39,10 +38,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
             try {
                 for (JSONObject pageObj : Util.jsonObjects(response)) {
                     for (JSONObject postObj : Util.jsonObjects(pageObj, "threads")) {
-                        // We know for a fact that this is not null.
-                        JSONObject checkedPostObj = postObj;
-
-                        Post post = Post.fromChanJSON(boardID, checkedPostObj);
+                        Post post = Post.fromChanJSON(boardID, postObj);
                         postList.add(post);
                     }
                 }
@@ -57,7 +53,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         public void onErrorResponse(VolleyError error) {
             getActivity().setProgressBarIndeterminateVisibility(false);
 
-            String failureText = null;
+            String failureText;
 
             if (error instanceof ParseError) {
                 failureText = "Error parsing board, it may not exist!";
@@ -115,12 +111,7 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
         return grid;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    public void setBoardID(String boardID) {
+    public void setBoardID(@Nullable String boardID) {
         this.boardID = boardID;
 
         updateCatalog();

@@ -1,7 +1,6 @@
 package com.w0rp.yotsubadroid;
 
 import android.annotation.SuppressLint;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;

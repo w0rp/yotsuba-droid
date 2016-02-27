@@ -62,7 +62,7 @@ public class Board {
             obj.put("worksafe", worksafe);
             obj.put("postsPerPage", postsPerPage);
             obj.put("pageCount", pageCount);
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
 
         return obj;

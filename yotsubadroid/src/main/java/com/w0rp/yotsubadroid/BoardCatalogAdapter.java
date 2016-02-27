@@ -4,7 +4,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,7 +36,9 @@ public class BoardCatalogAdapter extends PostListAdapter {
 
             item = inf.inflate(R.layout.catalog_item, parent, false);
 
-            assert item instanceof RelativeLayout;
+            if (BuildConfig.DEBUG && !(item instanceof RelativeLayout)) {
+               throw new AssertionError();
+            }
         }
 
         final Post post = getItem(position);

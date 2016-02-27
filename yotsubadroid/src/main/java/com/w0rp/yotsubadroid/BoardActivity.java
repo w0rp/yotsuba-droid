@@ -1,6 +1,5 @@
 package com.w0rp.yotsubadroid;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,13 +9,9 @@ import org.json.JSONObject;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.w0rp.yotsubadroid.R;
 
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
