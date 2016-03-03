@@ -1,4 +1,4 @@
-Copyright (c) 2013, w0rp <devw0rp@gmail.com>
+Copyright (c) 2013-2016, w0rp <devw0rp@gmail.com>
 All rights reserved.
 
 The source code in the package com.w0rp.yotsubadroid, and all of the Android
