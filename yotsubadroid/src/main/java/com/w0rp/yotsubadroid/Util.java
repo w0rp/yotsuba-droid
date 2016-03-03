@@ -34,19 +34,30 @@ public abstract class Util {
 
         @Override
         public final void remove() {
-            ++index;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public final boolean hasNext() {
             return index < array.length();
         }
+
+        @Override
+        public final @Nullable T next() {
+            T obj = getObject(index);
+
+            ++index;
+
+            return obj;
+        }
+
+        abstract T getObject(int index);
     }
 
     public static class JSONArrayJOIterator
     extends JSONArrayIterator<JSONObject> {
         @Override
-        public @Nullable JSONObject next() {
+        JSONObject getObject(int index) {
             return array.optJSONObject(index);
         }
     }

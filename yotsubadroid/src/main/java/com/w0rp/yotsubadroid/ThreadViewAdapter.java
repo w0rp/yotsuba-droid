@@ -71,7 +71,7 @@ public class ThreadViewAdapter extends PostListAdapter {
         }
 
         final NetworkImageView imageView = (NetworkImageView) item
-            .findViewById(R.id.catalog_item_image);
+            .findViewById(R.id.post_image);
 
         if (imageView == null) {
             return;

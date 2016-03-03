@@ -85,12 +85,12 @@ public class BoardActivity extends Activity implements OnItemClickListener {
 
         setProgressBarIndeterminateVisibility(true);
 
-        new JsonObjectRequest(
+        Yot.getRequestQueue().add(new JsonObjectRequest(
             Yot.API_URL + "boards.json",
             null,
             boardListener,
             boardListener
-        );
+        ));
     }
 
     @Override

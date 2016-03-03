@@ -132,13 +132,13 @@ implements ThreadInteractor {
     public void updateThread() {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        new JsonObjectRequest(
+        Yot.getRequestQueue().add(new JsonObjectRequest(
             Yot.API_URL + Uri.encode(currentBoardID) + "/res/"
                 + Long.toString(currentThreadID) + ".json",
             null,
             threadListener,
             threadListener
-        );
+        ));
     }
 
     private void openThread(String otherBoardID, long threadID, long postID) {

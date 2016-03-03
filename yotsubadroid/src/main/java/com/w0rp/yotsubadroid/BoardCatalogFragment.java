@@ -90,11 +90,11 @@ implements BoardCatalogAdapter.OnThreadSelectedListener {
     public void updateCatalog() {
         getActivity().setProgressBarIndeterminateVisibility(true);
 
-        new JsonArrayRequest(
+        Yot.getRequestQueue().add(new JsonArrayRequest(
             Yot.API_URL + Uri.encode(boardID) + "/catalog.json",
             catalogListener,
             catalogListener
-        );
+        ));
     }
 
     @Override

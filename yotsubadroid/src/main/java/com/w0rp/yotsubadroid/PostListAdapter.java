@@ -35,7 +35,6 @@ public abstract class PostListAdapter extends BaseAdapter {
         final URI fileURL = post.getSmallFileURL();
 
         if (fileURL != null) {
-            // TODO: Use an ImageLoader here.
             imageView.setImageUrl(fileURL.toString(), Yot.getImageLoader());
         }
     }
